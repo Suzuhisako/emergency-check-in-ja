@@ -655,32 +655,7 @@
       if (btnElement || statusChanged) {
         saveData();
       }
-    }
-    
-    /* function selectStatus(statusKey, btnElement) {
-      currentStatus = statusKey;
-    
-      // Remove active state from all status buttons
-      document.querySelectorAll('.status-btn').forEach(btn => btn.classList.remove('active'));
-    
-      // Highlight selected button
-      if (btnElement) {
-        btnElement.classList.add('active');
-      } else {
-        // Fallback lookup by ID if btnElement is not passed
-        const idMap = {
-          'SAFE': 'btn-safe',
-          'IN TRANSIT': 'btn-transit',
-          'EVACUATED': 'btn-evacuated',
-          'NEED HELP': 'btn-needhelp'
-        };
-        const target = document.getElementById(idMap[statusKey]);
-        if (target) target.classList.add('active');
-      }
-    
-      // Persist updated status
-      saveData();
-    } */
+    }    
      
     function copyAndOpenSMS() {
       const recipientSelect = document.getElementById("smsRecipient");
@@ -1289,6 +1264,7 @@
       reader.readAsText(file);
     }
 
+     // 統合されたイベントリスナー
     document.addEventListener("DOMContentLoaded", () => {
       loadData(); // loadData already loads status and calls selectStatus()
       initBatteryAPI();
@@ -1320,40 +1296,6 @@
         });
       }
     });
-
-    // 統合されたイベントリスナー
-    /* document.addEventListener("DOMContentLoaded", () => {
-      loadData();
-      initBatteryAPI();
-      saveData();
-
-      if (navigator.onLine) {
-        flushOfflineQueue();
-      }
-
-      const noteInput = document.getElementById("statusNote");
-      if (noteInput) {
-        noteInput.addEventListener("input", () => {
-          saveData();
-        });
-      }
-  
-      const smsRecipient = document.getElementById("smsRecipient");
-      if (smsRecipient) {
-        smsRecipient.addEventListener("input", () => {
-          saveData();
-        });
-      }
-  
-      const smsModalEl = document.getElementById('smsModal');
-      if (smsModalEl) {
-        smsModalEl.addEventListener('show.bs.modal', () => {
-          populateSenderDropdown();
-          const textarea = document.getElementById('smsTextarea');
-          if (textarea) textarea.value = '';
-        });
-      }
-    }); */
 
     // ネットワーク接続検出時に自動同期
     window.addEventListener('online', () => {
