@@ -826,26 +826,33 @@
     
       const currentSelection = select.value;
     
-      // 1. Set default placeholder option based on familyData state
+      // 1. Set default initial options
       if (!familyData || familyData.length === 0) {
         select.innerHTML = '<option value="">-- 家族がまだ登録されていません (下から追加) --</option>';
       } else {
-        select.innerHTML = '<option value="">-- 家族を選択して、下のボタンを押してください --</option>';
+        select.innerHTML = `
+          <option value="">-- 家族を選択して、下のボタンを押してください --</option>
+          <option value="ALL">👥 全員に送信</option>
+        `;
       }
     
       // 2. Append options for each family member with a valid phone number
-      familyData.forEach(member => {
-        if (member.phone) {
-          const option = document.createElement('option');
-          option.value = member.phone;
-          option.textContent = `👤 ${member.name} (${member.phone})`;
-          select.appendChild(option);
-        }
-      });
+      if (familyData && familyData.length > 0) {
+        familyData.forEach(member => {
+          if (member.phone) {
+            const option = document.createElement('option');
+            option.value = member.phone;
+            option.textContent = `👤 ${member.name} (${member.phone})`;
+            select.appendChild(option);
+          }
+        });
+      }
     
-      // 3. Restore previous selection if it exists
-      if (currentSelection) {
+      // 3. Restore previous selection if it exists, otherwise keep placeholder selected
+      if (currentSelection && Array.from(select.options).some(opt => opt.value === currentSelection)) {
         select.value = currentSelection;
+      } else {
+        select.value = ""; // Defaults to "-- 家族を選択して..."
       }
     }
 
