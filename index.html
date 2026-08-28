@@ -659,9 +659,9 @@
      
     function copyAndOpenSMS() {
       const recipientSelect = document.getElementById("smsRecipient");
-      const recipientPhone = recipientSelect ? recipientSelect.value : "";
+      const selectedValue = recipientSelect ? recipientSelect.value : "";
     
-      if (!recipientPhone) {
+      if (!selectedValue) {
         alert("最初にドロップダウンから送信先の家族を選択してください！");
         return;
       }
@@ -690,7 +690,7 @@
     
       // 4. バッテリー残量を取得
       const batteryVal = (typeof liveBattery !== "undefined" && liveBattery !== null) ? liveBattery : "100";
-
+    
       // 5. GPS座標を取得 (localStorageからのフォールバック付き)
       let gpsString = "N/A";
       let coords = (typeof currentCoords !== 'undefined' && currentCoords) ? currentCoords : null;
@@ -699,7 +699,7 @@
         if (savedData) {
           try {
             const parsed = JSON.parse(savedData);
-            if (parsed.coords) coords = parsed.parsed;
+            if (parsed.coords) coords = parsed.coords;
           } catch (e) {
             console.warn("Could not parse saved coords", e);
           }
@@ -711,12 +711,33 @@
         gpsString = `https://maps.google.com/?q=${coords.lat},${coords.lon}`;
       }
     
-      // 6. 電話番号のクレンジング
-      const cleanPhone = recipientPhone.trim().replace(/[^0-9+]/g, '');
+      // 6. 電話番号の収集とクレンジング (単一 or 全員)
+      let phoneNumbers = [];
+    
+      if (selectedValue === "ALL" || selectedValue === "全メンバー") {
+        // ドロップダウン内の全オプションから個別番号を取得 ('ALL' や 空文字 を除外)
+        const options = Array.from(recipientSelect.options);
+        phoneNumbers = options
+          .map(opt => opt.value.trim().replace(/[^0-9+]/g, ''))
+          .filter(val => val !== "" && val !== "ALL" && val !== "全メンバー");
+      } else {
+        const cleanPhone = selectedValue.trim().replace(/[^0-9+]/g, '');
+        if (cleanPhone) phoneNumbers.push(cleanPhone);
+      }
+    
+      if (phoneNumbers.length === 0) {
+        alert("有効な電話番号が見つかりませんでした。");
+        return;
+      }
+    
+      // OSごとに区切り文字を切り替え (iOS: ;, Android: ,)
+      const isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+      const delimiter = isiOS ? ";" : ",";
+      const recipientString = phoneNumbers.join(delimiter);
     
       // 7. メッセージペイロードの構築
       const textToCopy = `【緊急安否確認】 状態: ${selectedStatus} | 位置: ${gpsString} | 電池: ${batteryVal}% | メモ: ${noteText}`;
-      
+    
       // 8. クリップボードへコピーしてSMSアプリを起動
       navigator.clipboard.writeText(textToCopy).then(() => {
         const alertElem = document.getElementById("copyAlert");
@@ -726,7 +747,7 @@
         }
     
         setTimeout(() => {
-          window.location.href = cleanPhone ? `sms:${cleanPhone}` : `sms:`;
+          window.location.href = `sms:${recipientString}`;
         }, 1500); 
       }).catch(() => {
         alert("送信テキスト: " + textToCopy);
