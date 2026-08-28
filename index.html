@@ -59,14 +59,44 @@
       animation: pulseBtn 0.7s infinite;
     }
 
+    /* --- Common Base & Mobile Fixes --- */
+    .status-btn {
+      -webkit-tap-highlight-color: transparent; /* Prevent gray/white overlay on mobile tap */
+    }
+    
+    /* --- 1. SAFE (無事・安全) --- */
+    .btn-outline-success {
+      border-width: 2px !important;
+    }
+    .btn-outline-success:focus,
+    .btn-outline-success:active,
+    .btn-outline-success.active {
+      color: #fff !important;
+      background-color: #198754 !important;
+      border-color: #198754 !important;
+      box-shadow: none !important;
+    }
+    
+    /* --- 2. IN TRANSIT (移動中) --- */
+    .btn-outline-warning {
+      border-width: 2px !important;
+    }
+    .btn-outline-warning:focus,
+    .btn-outline-warning:active,
+    .btn-outline-warning.active {
+      color: #000 !important;
+      background-color: #ffc107 !important;
+      border-color: #ffc107 !important;
+      box-shadow: none !important;
+    }
+    
+    /* --- 3. EVACUATED (避難完了 - Your Custom CSS) --- */
     .btn-outline-blue {
       color: #066f8f;
       border: 2px solid #066f8f;
       background-color: transparent;
-      -webkit-tap-highlight-color: transparent; /* モバイルタップ時のグレー/ホワイトオーバーレイを防止 */
+      -webkit-tap-highlight-color: transparent;
     }
-    
-    /* ホバー状態 (主にデスクトップのマウス操作用) */
     @media (hover: hover) {
       .btn-outline-blue:hover {
         color: #fff;
@@ -74,32 +104,40 @@
         border-color: #066f8f;
       }
     }
-    
-    /* アクティブ & フォーカス状態 (スマホでのタップ状態を処理) */
     .btn-outline-blue:focus,
     .btn-outline-blue:active,
     .btn-outline-blue.active {
       color: #fff !important;
       background-color: #066f8f !important;
       border-color: #066f8f !important;
-      box-shadow: none !important; /* Bootstrapデフォルトの発光リングを削除 */
+      box-shadow: none !important;
+    }
+    
+    /* --- 4. NEED HELP (要救助) --- */
+    .btn-outline-danger {
+      border-width: 2px !important;
+    }
+    .btn-outline-danger:focus,
+    .btn-outline-danger:active,
+    .btn-outline-danger.active {
+      color: #fff !important;
+      background-color: #dc3545 !important;
+      border-color: #dc3545 !important;
+      box-shadow: none !important;
     }
 
+    /* Touch device adjustments (GPS button only) */
     @media (hover: none), (pointer: coarse) {
       #btn-gps:focus,
       #btn-gps:focus-visible,
       #btn-gps:active,
-      #btn-gps:hover,
-      .btn-outline-success:focus,
-      .btn-outline-success:focus-visible,
-      .btn-outline-success:active,
-      .btn-outline-success:hover {
+      #btn-gps:hover {
         background-color: transparent !important;
         color: #198754 !important;
         border-color: #198754 !important;
         box-shadow: none !important;
       }
-    }
+    }  
 
     /* キーフレームアニメーション */
     @keyframes pulse {
