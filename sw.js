@@ -1,33 +1,30 @@
-const CACHE_NAME = 'family-board-v3';
+const CACHE_NAME = 'family-board-ja-v1';
 
-// Add any CDN links (Bootstrap CSS/JS, Fonts) if hosted externally!
 const STATIC_ASSETS = [
   './',
   './index.html',
   './manifest.json',
   './icon-192.png',
   './icon-512.png'
-  // 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css',
-  // 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js'
 ];
 
-// ------------------------------------------------------------------
-// 1. Install Event: Pre-cache App Shell
-// ------------------------------------------------------------------
+// 1. Install Event: Resilient Pre-caching
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      // Use addAll, but catch errors to prevent whole SW failing if an icon is missing
-      return cache.addAll(STATIC_ASSETS).catch((err) => {
-        console.warn('[SW] Pre-cache warning (some assets may be missing):', err);
-      });
-    })
+    caches.open(CACHE_NAME).then(async (cache) => {
+      console.log('[SW-JA] Pre-caching local assets...');
+      await Promise.allSettled(
+        STATIC_ASSETS.map(url => 
+          fetch(url).then(response => {
+            if (response.ok) return cache.put(url, response);
+          }).catch(err => console.warn(`Failed to cache ${url}:`, err))
+        )
+      );
+    }).then(() => self.skipWaiting())
   );
 });
 
-// ------------------------------------------------------------------
-// 2. Activate Event: Wipe Legacy Caches & Claim Clients
-// ------------------------------------------------------------------
+// 2. Activate Event: Wipe Legacy Caches
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) => {
@@ -40,35 +37,29 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// ------------------------------------------------------------------
-// 3. Fetch Event: Cache-First for Instant Offline Speed
-// ------------------------------------------------------------------
+// 3. Fetch Event: Cache-First Strategy
 self.addEventListener('fetch', (event) => {
-  // Only handle standard GET HTTP(S) requests
   if (event.request.method !== 'GET') return;
   if (!event.request.url.startsWith('http')) return;
 
-  // A. Navigation Requests (Loading HTML / App Shell)
+  // A. Navigation Requests (Loading App Shell)
   if (event.request.mode === 'navigate') {
     event.respondWith(
       caches.match('./index.html')
         .then((cachedResponse) => {
           if (cachedResponse) {
-            // Serve cached HTML instantly, update cache in background if online
             fetch(event.request).then((networkResponse) => {
               if (networkResponse && networkResponse.status === 200) {
                 caches.open(CACHE_NAME).then((cache) => cache.put(event.request, networkResponse));
               }
-            }).catch(() => {/* Ignore background network failure */});
+            }).catch(() => {/* Ignore network errors while offline */});
 
             return cachedResponse;
           }
 
-          // Fallback if index.html wasn't pre-cached under exact key
           return fetch(event.request);
         })
         .catch(async () => {
-          // Robust multi-fallback promise resolution
           const fallback = await caches.match('./index.html') 
                         || await caches.match('./') 
                         || await caches.match('/');
@@ -78,7 +69,7 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // B. Asset & Static Resource Requests (Cache First, Network Fallback)
+  // B. Asset & Resource Requests
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       if (cachedResponse) return cachedResponse;
@@ -99,9 +90,7 @@ self.addEventListener('fetch', (event) => {
   );
 });
 
-// ------------------------------------------------------------------
-// 4. Message Listener: Instant Skip Waiting
-// ------------------------------------------------------------------
+// 4. Message Listener
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
