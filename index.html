@@ -800,53 +800,76 @@
         }
       
     function loadData() {
-      const savedFamily = localStorage.getItem("family_board_status");
-      familyData = savedFamily ? JSON.parse(savedFamily) : [...DEFAULT_FAMILY];
-  
-      populateSmsRecipientDropdown();
-  
-      const savedStatus = localStorage.getItem("my_emergency_status");
-      if (savedStatus) {
-        try {
-          const parsed = JSON.parse(savedStatus);
-          currentStatus = parsed.status || "SAFE";
-          const noteInput = document.getElementById("statusNote");
-          if (noteInput) noteInput.value = parsed.note || "";
-        } catch (err) {
-          console.warn("保存された安否状況の読み込みに失敗しました", err);
+      try {
+        // 1. Load family members board data (safely using family_board_data)
+        const savedFamily = localStorage.getItem("family_board_data") || localStorage.getItem("family_board_status");
+        if (savedFamily) {
+          try {
+            familyData = JSON.parse(savedFamily);
+          } catch (e) {
+            console.warn("家族データの読み込みエラー。初期値を使用します:", e);
+            familyData = typeof DEFAULT_FAMILY !== "undefined" ? [...DEFAULT_FAMILY] : [];
+          }
+        } else {
+          familyData = typeof DEFAULT_FAMILY !== "undefined" ? [...DEFAULT_FAMILY] : [];
         }
+    
+        // Populate dropdowns before status selection
+        if (typeof populateSmsRecipientDropdown === "function") {
+          populateSmsRecipientDropdown();
+        }
+    
+        // 2. Load personal emergency status
+        const savedStatus = localStorage.getItem("my_emergency_status");
+        if (savedStatus) {
+          try {
+            const parsed = JSON.parse(savedStatus);
+            currentStatus = parsed.status || "SAFE";
+            const noteInput = document.getElementById("statusNote");
+            if (noteInput && parsed.note) noteInput.value = parsed.note;
+          } catch (err) {
+            console.warn("保存された安否状況の読み込みに失敗しました:", err);
+          }
+        }
+    
+        const select = document.getElementById("smsRecipient");
+        if (select) select.value = "";
+    
+        // 3. Render UI cleanly
+        if (typeof selectStatus === "function") selectStatus(currentStatus);
+        if (typeof renderBoard === "function") renderBoard();
+    
+      } catch (globalErr) {
+        console.error("loadData() 実行時に重大なエラーが発生しました:", globalErr);
       }
-  
-      const select = document.getElementById("smsRecipient");
-      if (select) select.value = "";
-  
-      selectStatus(currentStatus);
-      renderBoard();
     }
-  
+    
     function saveData() {
       try {
         const noteInput = document.getElementById("statusNote");
         const noteText = noteInput ? noteInput.value : "";
-  
+    
+        // Save personal status
         localStorage.setItem("my_emergency_status", JSON.stringify({
           status: currentStatus,
           note: noteText,
           coords: currentCoords
         }));
-          
-        localStorage.setItem("family_board_status", JSON.stringify(familyData));
-  
+    
+        // Save family array with clear key name
+        localStorage.setItem("family_board_data", JSON.stringify(familyData));
+    
+        // Construct telemetry payload
         let gpsVal = "利用不可";
         if (currentCoords && currentCoords.lat && currentCoords.lon) {
           gpsVal = `${currentCoords.lat},${currentCoords.lon}`;
         }
-  
+    
         let batVal = "100%";
         if (typeof liveBattery !== "undefined" && liveBattery !== null) {
           batVal = `${liveBattery}%`;
         }
-  
+    
         const payload = {
           uid: "usr_self_01",
           status: currentStatus,
@@ -855,12 +878,12 @@
           ts: new Date().toISOString(),
           note: noteText
         };
-  
+    
         const rawElem = document.getElementById("rawPayload");
         if (rawElem) {
           rawElem.textContent = JSON.stringify(payload, null, 2);
         }
-  
+    
         if (typeof sendPayloadToServer === "function" && navigator.onLine) {
           sendPayloadToServer(payload);
         } else if (typeof addToOfflineQueue === "function") {
