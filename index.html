@@ -587,8 +587,39 @@
         options
       );
     }    
-     
+
     function selectStatus(statusKey, btnElement) {
+      // Prevent redundant triggers if already set
+      const statusChanged = (currentStatus !== statusKey);
+      currentStatus = statusKey;
+    
+      // Remove active state from all status buttons
+      document.querySelectorAll('.status-btn').forEach(btn => btn.classList.remove('active'));
+    
+      // Highlight selected button
+      let targetBtn = btnElement;
+      if (!targetBtn) {
+        const idMap = {
+          'SAFE': 'btn-safe',
+          'IN TRANSIT': 'btn-transit',
+          'EVACUATED': 'btn-evacuated',
+          'NEED HELP': 'btn-needhelp'
+        };
+        targetBtn = document.getElementById(idMap[statusKey]);
+      }
+    
+      if (targetBtn) {
+        targetBtn.classList.add('active');
+      }
+    
+      // Only call saveData if user explicitly clicked a NEW status
+      // (Prevents recursive triggers when called from loadData)
+      if (btnElement || statusChanged) {
+        saveData();
+      }
+    }
+    
+    /* function selectStatus(statusKey, btnElement) {
       currentStatus = statusKey;
     
       // Remove active state from all status buttons
@@ -611,8 +642,8 @@
     
       // Persist updated status
       saveData();
-    }
-  
+    } */
+     
     function copyAndOpenSMS() {
       const recipientSelect = document.getElementById("smsRecipient");
       const recipientPhone = recipientSelect ? recipientSelect.value : "";
@@ -1220,8 +1251,40 @@
       reader.readAsText(file);
     }
 
-    // 統合されたイベントリスナー
     document.addEventListener("DOMContentLoaded", () => {
+      loadData(); // loadData already loads status and calls selectStatus()
+      initBatteryAPI();
+    
+      if (navigator.onLine && typeof flushOfflineQueue === "function") {
+        flushOfflineQueue();
+      }
+    
+      const noteInput = document.getElementById("statusNote");
+      if (noteInput) {
+        noteInput.addEventListener("input", () => {
+          saveData();
+        });
+      }
+    
+      const smsRecipient = document.getElementById("smsRecipient");
+      if (smsRecipient) {
+        smsRecipient.addEventListener("change", () => {
+          saveData();
+        });
+      }
+    
+      const smsModalEl = document.getElementById('smsModal');
+      if (smsModalEl) {
+        smsModalEl.addEventListener('show.bs.modal', () => {
+          if (typeof populateSenderDropdown === "function") populateSenderDropdown();
+          const textarea = document.getElementById('smsTextarea');
+          if (textarea) textarea.value = '';
+        });
+      }
+    });
+
+    // 統合されたイベントリスナー
+    /* document.addEventListener("DOMContentLoaded", () => {
       loadData();
       initBatteryAPI();
       saveData();
@@ -1252,7 +1315,7 @@
           if (textarea) textarea.value = '';
         });
       }
-    });
+    }); */
 
     // ネットワーク接続検出時に自動同期
     window.addEventListener('online', () => {
