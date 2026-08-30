@@ -891,8 +891,8 @@
           try {
             const parsed = JSON.parse(savedStatus);
             currentStatus = parsed.status || "SAFE";
-            const noteInput = document.getElementById("statusNote");
-            if (noteInput && parsed.note) noteInput.value = parsed.note;
+            //const noteInput = document.getElementById("statusNote");
+            //if (noteInput && parsed.note) noteInput.value = parsed.note;
           } catch (err) {
             console.warn("保存された安否状況の読み込みに失敗しました:", err);
           }
