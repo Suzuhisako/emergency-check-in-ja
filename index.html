@@ -666,15 +666,7 @@
       }
     }    
      
-    function copyAndOpenSMS() {
-      const recipientSelect = document.getElementById("smsRecipient");
-      const selectedValue = recipientSelect ? recipientSelect.value : "";
-    
-      if (!selectedValue) {
-        alert("最初にドロップダウンから送信先の家族を選択してください！");
-        return;
-      }
-    
+    function copyAndOpenSMS() {    
       // 1. ローカルにデータを保存
       if (typeof saveData === 'function') {
         saveData();
@@ -720,22 +712,12 @@
         gpsString = `https://maps.google.com/?q=${coords.lat},${coords.lon}`;
       }
     
-      // 6. 電話番号の収集とクレンジング (単一 or 全員)
-      let phoneNumbers = [];
-    
-      if (selectedValue === "ALL" || selectedValue === "全メンバー") {
-        // ドロップダウン内の全オプションから個別番号を取得 ('ALL' や 空文字 を除外)
-        const options = Array.from(recipientSelect.options);
-        phoneNumbers = options
-          .map(opt => opt.value.trim().replace(/[^0-9+]/g, ''))
-          .filter(val => val !== "" && val !== "ALL" && val !== "全メンバー");
-      } else {
-        const cleanPhone = selectedValue.trim().replace(/[^0-9+]/g, '');
-        if (cleanPhone) phoneNumbers.push(cleanPhone);
-      }
+      // 6. 電話番号の収集 (選択されたチェックボックスを取得)
+      const checkedBoxes = document.querySelectorAll('.recipient-checkbox:checked');
+      const phoneNumbers = Array.from(checkedBoxes).map(cb => cb.value);          
     
       if (phoneNumbers.length === 0) {
-        alert("有効な電話番号が見つかりませんでした。");
+        alert("送信先を少なくとも1人選択してください！");
         return;
       }
     
@@ -828,6 +810,7 @@
       }).join('');
     }
   
+    // Render recipient checkboxes from familyData
     function populateRecipientCheckboxes() {
       const container = document.getElementById('recipientCheckboxesContainer');
       if (!container) return;
@@ -835,7 +818,7 @@
       container.innerHTML = '';
     
       if (!familyData || familyData.length === 0) {
-        container.innerHTML = '<div class="text-muted small">登録されている家族がいません</div>';
+        container.innerHTML = '<div class="text-muted small">登録されている家族がありません</div>';
         return;
       }
     
@@ -854,9 +837,13 @@
           container.appendChild(wrapper);
         }
       });
+    
+      // Reset "Select All" toggle state
+      const masterToggle = document.getElementById('selectAllRecipients');
+      if (masterToggle) masterToggle.checked = false;
     }
     
-    // Master Toggle Function for "Select All"
+    // Master Toggle Function
     function toggleAllRecipients(masterCheckbox) {
       const checkboxes = document.querySelectorAll('.recipient-checkbox');
       checkboxes.forEach(cb => cb.checked = masterCheckbox.checked);
