@@ -881,8 +881,8 @@
         }
     
         // Populate dropdowns before status selection
-        if (typeof populateSmsRecipientDropdown === "function") {
-          populateSmsRecipientDropdown();
+        if (typeof populateRecipientCheckboxes === "function") {
+          populateRecipientCheckboxes();
         }
     
         // 2. Load personal emergency status
@@ -1053,7 +1053,7 @@
   
       saveData();
       renderBoard();
-      populateSmsRecipientDropdown();
+     populateRecipientCheckboxes();
       if (document.activeElement) document.activeElement.blur();
       if (familyModalInstance) familyModalInstance.hide();
     }
@@ -1063,7 +1063,7 @@
       familyData = familyData.filter(m => String(m.id) !== String(id));
       saveData();
       renderBoard();
-      populateSmsRecipientDropdown();
+      populateRecipientCheckboxes();
     }
   
     function normalizePhone(phoneStr) {
@@ -1272,7 +1272,7 @@
             localStorage.setItem("family_board_status", JSON.stringify(familyData));
     
             renderBoard();
-            populateSmsRecipientDropdown();
+            populateRecipientCheckboxes();
     
             alert("家族ボードのデータを正常に復元しました！");
           }
