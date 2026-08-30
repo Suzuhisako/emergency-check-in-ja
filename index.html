@@ -828,40 +828,38 @@
       }).join('');
     }
   
-    function populateSmsRecipientDropdown() {
-      const select = document.getElementById('smsRecipient');
-      if (!select) return;
+    function populateRecipientCheckboxes() {
+      const container = document.getElementById('recipientCheckboxesContainer');
+      if (!container) return;
     
-      const currentSelection = select.value;
+      container.innerHTML = '';
     
-      // 1. Set default initial options
       if (!familyData || familyData.length === 0) {
-        select.innerHTML = '<option value="">-- 家族がまだ登録されていません (下から追加) --</option>';
-      } else {
-        select.innerHTML = `
-          <option value="">-- 家族を選択して、下のボタンを押してください --</option>
-          <option value="ALL">👥 全員に送信</option>
-        `;
+        container.innerHTML = '<div class="text-muted small">登録されている家族がいません</div>';
+        return;
       }
     
-      // 2. Append options for each family member with a valid phone number
-      if (familyData && familyData.length > 0) {
-        familyData.forEach(member => {
-          if (member.phone) {
-            const option = document.createElement('option');
-            option.value = member.phone;
-            option.textContent = `👤 ${member.name} (${member.phone})`;
-            select.appendChild(option);
-          }
-        });
-      }
+      familyData.forEach((member, index) => {
+        if (member.phone) {
+          const cleanPhone = member.phone.trim().replace(/[^0-9+]/g, '');
+          const wrapper = document.createElement('div');
+          wrapper.className = 'form-check';
+          
+          wrapper.innerHTML = `
+            <input class="form-check-input recipient-checkbox" type="checkbox" value="${cleanPhone}" id="recipient_${index}">
+            <label class="form-check-label text-white" for="recipient_${index}">
+              👤 ${member.name} (${member.phone})
+            </label>
+          `;
+          container.appendChild(wrapper);
+        }
+      });
+    }
     
-      // 3. Restore previous selection if it exists, otherwise keep placeholder selected
-      if (currentSelection && Array.from(select.options).some(opt => opt.value === currentSelection)) {
-        select.value = currentSelection;
-      } else {
-        select.value = ""; // Defaults to "-- 家族を選択して..."
-      }
+    // Master Toggle Function for "Select All"
+    function toggleAllRecipients(masterCheckbox) {
+      const checkboxes = document.querySelectorAll('.recipient-checkbox');
+      checkboxes.forEach(cb => cb.checked = masterCheckbox.checked);
     }
 
     function populateSenderDropdown() {
