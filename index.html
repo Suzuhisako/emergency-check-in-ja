@@ -813,35 +813,18 @@
     }
   
     // Render recipient checkboxes from familyData
+    
     function populateRecipientCheckboxes() {
       const container = document.getElementById('recipientCheckboxesContainer');
       if (!container) return;
     
       container.innerHTML = '';
     
-      // If no family members registered yet, display a helpful guidance message
       if (!familyData || familyData.length === 0) {
-        container.innerHTML = `
-          <div class="alert alert-dark border-secondary text-light mb-0 small text-center">
-            ⚠️ 送信先の家族がまだ登録されていません。<br>
-            画面下の <strong>「家族ボード (Family Board)」</strong> から追加してください。
-          </div>
-        `;
-    
-        // Disable or uncheck "Select All" master toggle
-        const masterToggle = document.getElementById('selectAllRecipients');
-        if (masterToggle) {
-          masterToggle.checked = false;
-          masterToggle.disabled = true;
-        }
+        container.innerHTML = '<div class="text-muted small">登録されている家族がありません</div>';
         return;
       }
     
-      // Re-enable "Select All" toggle when data exists
-      const masterToggle = document.getElementById('selectAllRecipients');
-      if (masterToggle) masterToggle.disabled = false;
-    
-      // Render registered family members
       familyData.forEach((member, index) => {
         if (member.phone) {
           const cleanPhone = member.phone.trim().replace(/[^0-9+]/g, '');
@@ -857,6 +840,16 @@
           container.appendChild(wrapper);
         }
       });
+    
+      // Reset "Select All" toggle state
+      const masterToggle = document.getElementById('selectAllRecipients');
+      if (masterToggle) masterToggle.checked = false;
+    }
+    
+    // Master Toggle Function
+    function toggleAllRecipients(masterCheckbox) {
+      const checkboxes = document.querySelectorAll('.recipient-checkbox');
+      checkboxes.forEach(cb => cb.checked = masterCheckbox.checked);
     }
     
     // Master Toggle Function
