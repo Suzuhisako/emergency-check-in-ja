@@ -1030,20 +1030,25 @@
     }
   
     function saveFamilyMember() {
-      const id = document.getElementById("modalMemberId").value;
-      const name = document.getElementById("modalMemberName").value.trim();
-      const rawPhone = document.getElementById("modalMemberPhone").value.trim();
-      const phone = typeof normalizePhone === "function" ? normalizePhone(rawPhone) : rawPhone; 
-      const status = document.getElementById("modalMemberStatus").value;
-      const location = document.getElementById("modalMemberLocation").value.trim();
+      const idElem = document.getElementById("modalMemberId");
+      const nameElem = document.getElementById("modalMemberName");
+      const phoneElem = document.getElementById("modalMemberPhone");
+      const statusElem = document.getElementById("modalMemberStatus");
+      const locElem = document.getElementById("modalMemberLocation");
     
-      // 1. Validation Fix: Wrap in proper curly braces
+      const id = idElem ? idElem.value : "";
+      const name = nameElem ? nameElem.value.trim() : "";
+      const rawPhone = phoneElem ? phoneElem.value.trim() : "";
+      const phone = typeof normalizePhone === "function" ? normalizePhone(rawPhone) : rawPhone; 
+      const status = statusElem ? statusElem.value : "SAFE";
+      const location = locElem ? locElem.value.trim() : "";
+    
+      // Corrected IF statement with proper opening and closing braces:
       if (!name) {
         alert("お名前を入力してください。");
         return;
       }
     
-      // 2. Ensure familyData array exists
       if (!Array.isArray(familyData)) {
         familyData = [];
       }
@@ -1079,20 +1084,14 @@
         });
       }
     
-      // 3. Save & UI Refresh
       if (typeof saveData === "function") saveData();
       if (typeof renderBoard === "function") renderBoard();
       if (typeof populateRecipientCheckboxes === "function") populateRecipientCheckboxes();
     
       if (document.activeElement) document.activeElement.blur();
-      if (familyModalInstance) familyModalInstance.hide();
-    }
-  
-      saveData();
-      renderBoard();
-      populateRecipientCheckboxes();
-      if (document.activeElement) document.activeElement.blur();
-      if (familyModalInstance) familyModalInstance.hide();
+      if (typeof familyModalInstance !== "undefined" && familyModalInstance) {
+        familyModalInstance.hide();
+      }
     }
   
     function deleteFamilyMember(id) {
