@@ -496,13 +496,13 @@
     // ------------------------------------------------------------------
     // State Management
     // ------------------------------------------------------------------
-    const DEFAULT_FAMILY = [
-      { id: "dad", name: "太郎 (父)", status: "SAFE", badgeClass: "bg-success", time: "10:18 AM", location: "📍 茅ヶ崎小学校 避難所", battery: "88%", via: "受信経路: 直接BLE", viaClass: "text-success" },
-      { id: "ken", name: "健 (兄弟)", status: "NO SIGNAL", badgeClass: "bg-secondary", time: "08:30 AM", location: "📍 最終確認場所: 自宅", battery: "95%", via: "受信待機中...", viaClass: "text-secondary" }
-    ];
+    //const DEFAULT_FAMILY = [
+      //{ id: "dad", name: "太郎 (父)", status: "SAFE", badgeClass: "bg-success", time: "10:18 AM", location: "📍 茅ヶ崎小学校 避難所", battery: "88%", via: "受信経路: 直接BLE", viaClass: "text-success" },
+      //{ id: "ken", name: "健 (兄弟)", status: "NO SIGNAL", badgeClass: "bg-secondary", time: "08:30 AM", location: "📍 最終確認場所: 自宅", battery: "95%", via: "受信待機中...", viaClass: "text-secondary" }
+    //];
 
     // Start with a clean empty array on first launch
-    //let familyData = JSON.parse(localStorage.getItem("familyData")) || [];
+    let familyData = JSON.parse(localStorage.getItem("familyData")) || [];
   
     let audioCtx = null;
     let oscillator = null;
