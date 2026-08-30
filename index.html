@@ -496,11 +496,13 @@
     // ------------------------------------------------------------------
     // State Management
     // ------------------------------------------------------------------
-    const DEFAULT_FAMILY = [
-      { id: "dad", name: "太郎 (父)", status: "SAFE", badgeClass: "bg-success", time: "10:18 AM", location: "📍 茅ヶ崎小学校 避難所", battery: "88%", via: "受信経路: 直接BLE", viaClass: "text-success" },
-      { id: "mom", name: "花子 (母)", status: "IN TRANSIT", badgeClass: "bg-warning text-dark", time: "10:05 AM", location: "📍 駅に向かって移動中", battery: "41%", via: "受信経路: メッシュホップ #3", viaClass: "text-warning" },
-      { id: "ken", name: "健 (兄弟)", status: "NO SIGNAL", badgeClass: "bg-secondary", time: "08:30 AM", location: "📍 最終確認場所: 自宅", battery: "95%", via: "受信待機中...", viaClass: "text-secondary" }
-    ];
+    //const DEFAULT_FAMILY = [
+      //{ id: "dad", name: "太郎 (父)", status: "SAFE", badgeClass: "bg-success", time: "10:18 AM", location: "📍 茅ヶ崎小学校 避難所", battery: "88%", via: "受信経路: 直接BLE", viaClass: "text-success" },
+      //{//{ id: "ken", name: "健 (兄弟)", status: "NO SIGNAL", badgeClass: "bg-secondary", time: "08:30 AM", location: "📍 最終確認場所: 自宅", battery: "95%", via: "受信待機中...", viaClass: "text-secondary" }
+    //];
+
+    // Start with a clean empty array on first launch
+    let familyData = JSON.parse(localStorage.getItem("familyData")) || [];
   
     let audioCtx = null;
     let oscillator = null;
@@ -817,11 +819,29 @@
     
       container.innerHTML = '';
     
+      // If no family members registered yet, display a helpful guidance message
       if (!familyData || familyData.length === 0) {
-        container.innerHTML = '<div class="text-muted small">登録されている家族がありません</div>';
+        container.innerHTML = `
+          <div class="alert alert-dark border-secondary text-light mb-0 small text-center">
+            ⚠️ 送信先の家族がまだ登録されていません。<br>
+            画面下の <strong>「家族ボード (Family Board)」</strong> から追加してください。
+          </div>
+        `;
+    
+        // Disable or uncheck "Select All" master toggle
+        const masterToggle = document.getElementById('selectAllRecipients');
+        if (masterToggle) {
+          masterToggle.checked = false;
+          masterToggle.disabled = true;
+        }
         return;
       }
     
+      // Re-enable "Select All" toggle when data exists
+      const masterToggle = document.getElementById('selectAllRecipients');
+      if (masterToggle) masterToggle.disabled = false;
+    
+      // Render registered family members
       familyData.forEach((member, index) => {
         if (member.phone) {
           const cleanPhone = member.phone.trim().replace(/[^0-9+]/g, '');
@@ -837,10 +857,6 @@
           container.appendChild(wrapper);
         }
       });
-    
-      // Reset "Select All" toggle state
-      const masterToggle = document.getElementById('selectAllRecipients');
-      if (masterToggle) masterToggle.checked = false;
     }
     
     // Master Toggle Function
