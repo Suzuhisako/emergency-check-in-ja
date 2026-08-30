@@ -780,21 +780,27 @@
         "Local entry": "手動入力",
         "Direct contact": "直接連絡",
         "Mesh Transfer": "メッシュ転送",
-        "Self Check-In": "本人更新"
+        "Self Check-In": "本人更新",
+        "手動登録": "手動登録"
       };
     
       list.innerHTML = familyData.map(m => {
-        const displayStatus = statusLabels[m.status] || m.status;
+        const displayStatus = statusLabels[m.status] || m.status || "情報なし";
         
         // Map m.via to Japanese, or fallback to original/default text
         const displayVia = viaLabels[m.via] || m.via || "直接連絡";
+    
+        // Safe helper function calls
+        const safePhoneNorm = (typeof normalizePhone === "function" && m.phone) ? normalizePhone(m.phone) : m.phone;
+        const safePhoneDisp = (typeof formatPhoneDisplay === "function" && m.phone) ? formatPhoneDisplay(m.phone) : m.phone;
+        const safeBadge = m.badgeClass || (typeof getBadgeClass === "function" ? getBadgeClass(m.status) : "bg-success");
     
         return `
           <div class="list-group-item bg-transparent text-light border-secondary px-0 py-2">
             <div class="d-flex justify-content-between align-items-start">
               <div>
-                <span class="fw-bold fs-6">${m.name}</span>
-                <span class="badge ${m.badgeClass || getBadgeClass(m.status)} ms-2">${displayStatus}</span>
+                <span class="fw-bold fs-6">${m.name || '名前未設定'}</span>
+                <span class="badge ${safeBadge} ms-2">${displayStatus}</span>
               </div>
               <div>
                 <button class="btn btn-sm btn-outline-warning py-0 px-2 me-1" onclick="openEditModal('${m.id}')">✏️</button>
@@ -803,7 +809,7 @@
             </div>
             
             <div class="small text-secondary mt-1">
-              ${m.phone ? `<a href="tel:${normalizePhone(m.phone)}" class="text-info me-2" style="text-decoration:none;">📞 ${formatPhoneDisplay(m.phone)}</a> • ` : ''}
+              ${m.phone ? `<a href="tel:${safePhoneNorm}" class="text-info me-2" style="text-decoration:none;">📞 ${safePhoneDisp}</a> • ` : ''}
               ${m.location || '📍 場所不明'} • 🔋 ${m.battery || '100%'}
             </div>
             <div class="small ${m.viaClass || 'text-secondary'} mt-1" style="font-size: 0.75rem;">${displayVia} • <span class="text-secondary">${m.time || ''}</span></div>
@@ -1027,15 +1033,24 @@
       const id = document.getElementById("modalMemberId").value;
       const name = document.getElementById("modalMemberName").value.trim();
       const rawPhone = document.getElementById("modalMemberPhone").value.trim();
-      const phone = normalizePhone(rawPhone); 
+      const phone = typeof normalizePhone === "function" ? normalizePhone(rawPhone) : rawPhone; 
       const status = document.getElementById("modalMemberStatus").value;
       const location = document.getElementById("modalMemberLocation").value.trim();
-  
-      if (!name) return alert("お名前を入力してください。");
-  
-      const badgeClass = getBadgeClass(status);
+    
+      // 1. Validation Fix: Wrap in proper curly braces
+      if (!name) {
+        alert("お名前を入力してください。");
+        return;
+      }
+    
+      // 2. Ensure familyData array exists
+      if (!Array.isArray(familyData)) {
+        familyData = [];
+      }
+    
+      const badgeClass = typeof getBadgeClass === "function" ? getBadgeClass(status) : "bg-success";
       const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  
+    
       if (id) {
         const idx = familyData.findIndex(m => String(m.id) === String(id));
         if (idx !== -1) {
@@ -1063,10 +1078,19 @@
           viaClass: "text-info"
         });
       }
+    
+      // 3. Save & UI Refresh
+      if (typeof saveData === "function") saveData();
+      if (typeof renderBoard === "function") renderBoard();
+      if (typeof populateRecipientCheckboxes === "function") populateRecipientCheckboxes();
+    
+      if (document.activeElement) document.activeElement.blur();
+      if (familyModalInstance) familyModalInstance.hide();
+    }
   
       saveData();
       renderBoard();
-     populateRecipientCheckboxes();
+      populateRecipientCheckboxes();
       if (document.activeElement) document.activeElement.blur();
       if (familyModalInstance) familyModalInstance.hide();
     }
@@ -1074,9 +1098,9 @@
     function deleteFamilyMember(id) {
       if (!confirm("本当にこのメンバーを削除しますか？")) return;
       familyData = familyData.filter(m => String(m.id) !== String(id));
-      saveData();
+      if (typeof saveData === "function") saveData();
       renderBoard();
-      populateRecipientCheckboxes();
+      if (typeof populateRecipientCheckboxes === "function") populateRecipientCheckboxes();
     }
   
     function normalizePhone(phoneStr) {
