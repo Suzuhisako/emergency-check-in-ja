@@ -729,7 +729,7 @@
       const recipientString = phoneNumbers.join(delimiter);
     
       // 7. メッセージペイロードの構築
-      const textToCopy = `【緊急安否確認】 状態: ${selectedStatus} | 位置: ${gpsString} | 電池: ${batteryVal}% | メモ: ${noteText}`;
+      const textToCopy = `【緊急安否確認】 状況: ${selectedStatus} | 位置: ${gpsString} | 電池: ${batteryVal}% | メモ: ${noteText}`;
     
       // 8. クリップボードへコピーしてSMSアプリを起動
       navigator.clipboard.writeText(textToCopy).then(() => {
