@@ -105,6 +105,11 @@
       border-color: #d99b00 !important;
       box-shadow: none !important;
     }
+    /* --- Matching Badge for IN TRANSIT (#d99b00) --- */
+    .bg-amber {
+      background-color: #d99b00 !important;
+      color: #ffffff !important;
+    }
     
     /* --- 3. EVACUATED (避難完了  */
     .btn-outline-blue {
@@ -751,9 +756,9 @@
     // ------------------------------------------------------------------
     function getBadgeClass(status) {
       if (status === 'SAFE') return 'bg-success';
-      if (status === 'IN TRANSIT') return 'bg-warning text-dark';
-      if (status === 'EVACUATED') return 'bg-blue'; // Matches #066f8f
-      if (status === 'NEED HELP') return 'bg-soft-danger'; // Or 'bg-danger'
+      if (status === 'IN TRANSIT') return 'bg-amber'; 
+      if (status === 'EVACUATED') return 'bg-blue';
+      if (status === 'NEED HELP') return 'bg-soft-danger';
       return 'bg-secondary';
     }
   
