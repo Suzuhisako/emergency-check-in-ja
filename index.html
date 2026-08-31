@@ -1186,59 +1186,67 @@
         .replace(/％/g, "%")
         .replace(/ /g, " ")
         .replace(/[ー−―–—]/g, "-");
-  
+    
       const phoneHeaderPattern = /(?:from|tel|phone|送信元|電話番号)?\s*[:\-]?\s*(\+?\d[\d\-]{8,14}\d|\+?\d{2,4}(?:[\s\-]\d{2,4}){2,4})/gi;
       let detectedPhone = senderPhoneInput;
       const phoneMatches = text.match(phoneHeaderPattern);
-  
+    
       if (phoneMatches && !detectedPhone) {
         detectedPhone = phoneMatches[0];
       }
-  
-      const cleanSenderPhone = normalizePhone(detectedPhone);
+    
+      const cleanSenderPhone = typeof normalizePhone === "function" ? normalizePhone(detectedPhone) : detectedPhone;
       if (!cleanSenderPhone) {
         return alert("メッセージから有効な送信者の電話番号を特定できませんでした。");
       }
-  
-      const memberIndex = familyData.findIndex(m => m.phone && normalizePhone(m.phone) === cleanSenderPhone);
+    
+      const memberIndex = familyData.findIndex(m => m.phone && (typeof normalizePhone === "function" ? normalizePhone(m.phone) : m.phone) === cleanSenderPhone);
       if (memberIndex === -1) {
         return alert(`電話番号: ${detectedPhone} に該当する登録家族メンバーが見つかりません。`);
       }
-  
+    
+      // --- 1. Status Extraction (Includes all 4 statuses) ---
       let status = "SAFE";
       const upperText = text.toUpperCase();
       if (upperText.includes("EVACUATED") || upperText.includes("EVAC") || text.includes("避難") || text.includes("ひなん")) {
         status = "EVACUATED";
       } else if (upperText.includes("NEED HELP") || upperText.includes("HELP") || upperText.includes("SOS") || text.includes("救助") || text.includes("助けて") || text.includes("要救助")) {
         status = "NEED HELP";
+      } else if (upperText.includes("TRANSIT") || text.includes("移動中") || text.includes("移動")) {
+        status = "IN TRANSIT";
       } else if (upperText.includes("SAFE") || text.includes("無事") || text.includes("安全")) {
         status = "SAFE";
       }
-  
+    
+      // --- 2. Battery Extraction ---
       let battery = null;
-      const batteryMatch = text.match(/(\d{1,3})\s*%/);
+      // Matches "バッテリー:85%", "電池 85%", "BAT: 85%", or standalone "85%"
+      const batteryMatch = text.match(/(?:バッテリー|電池|bat|batt|battery)?\s*[:：]?\s*(\d{1,3})\s*%/i);
       if (batteryMatch) {
         battery = `${batteryMatch[1]}%`;
       }
-  
+    
+      // --- 3. Clean Note Generation ---
       let cleanNote = text
         .replace(phoneHeaderPattern, "")
-        .replace(/SAFE|EVACUATED|EVAC|NEED HELP|HELP|SOS|UNKNOWN|無事|安全|避難|救助|助けて|要救助/gi, "")
-        .replace(/\b\d{1,3}\s*%?/gi, "")
+        .replace(/SAFE|EVACUATED|EVAC|NEED HELP|HELP|SOS|TRANSIT|UNKNOWN|無事|安全|避難|移動中|移動|救助|助けて|要救助/gi, "")
+        .replace(/(?:バッテリー|電池|bat|batt|battery)?\s*[:：]?\s*\d{1,3}\s*%/gi, "") // Remove battery portion only
+        .replace(/(?:バッテリー|電池|bat|batt|battery)/gi, "")
         .replace(/[:,\-]/g, " ")
         .replace(/\s+/g, " ")
         .trim();
-  
+    
       if (!cleanNote) {
         cleanNote = "📍 位置情報なし";
       } else {
         cleanNote = cleanNote.startsWith("📍") ? cleanNote : `📍 ${cleanNote}`;
       }
-  
+    
       const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  
+    
+      // --- 4. Update Board State ---
       familyData[memberIndex].status = status;
-      familyData[memberIndex].badgeClass = getBadgeClass(status);
+      familyData[memberIndex].badgeClass = typeof getBadgeClass === "function" ? getBadgeClass(status) : "bg-success";
       familyData[memberIndex].location = cleanNote;
       familyData[memberIndex].time = currentTime;
       familyData[memberIndex].via = "SMS取込";
@@ -1246,10 +1254,10 @@
       if (battery) {
         familyData[memberIndex].battery = battery;
       }
-  
-      saveData();
-      renderBoard();
-  
+    
+      if (typeof saveData === "function") saveData();
+      if (typeof renderBoard === "function") renderBoard();
+    
       alert(`${familyData[memberIndex].name} さんの情報を更新しました！ (状況: ${status})`);
     }
   
