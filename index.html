@@ -301,12 +301,8 @@
         </div>
       </div>
 
-      <div class="list-group list-group-flush" id="familyList"></div>
-
-            
-        <!-- JSON復元用の非表示ファイルインプット -->
-        <input type="file" id="importFileInput" accept=".json" style="display: none;" onchange="importFamilyData(event)">
-      </div>
+      <div class="list-group list-group-flush" id="familyList"></div>           
+       
     </section>
 
     <!-- 家族メンバーモーダル -->
@@ -1251,7 +1247,7 @@
       }
     }
   
-    function exportFamilyData() {
+   /* function exportFamilyData() {
       if (!familyData || familyData.length === 0) {
         alert("エクスポートする家族データがありません。");
         return;
@@ -1302,7 +1298,7 @@
       };
     
       reader.readAsText(file);
-    }
+    }*/
 
      // 統合されたイベントリスナー
     document.addEventListener("DOMContentLoaded", () => {
