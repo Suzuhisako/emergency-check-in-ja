@@ -62,6 +62,7 @@
 ---
 
 
-📄 ライセンス License
-This project is open-source and available under the MIT License.
-このプロジェクトはオープンソースであり、MITライセンスの下で公開されています。
+##📄 ライセンス (License)
+
+**This project is open-source and available under the MIT License.
+**このプロジェクトはオープンソースであり、MITライセンスの下で公開されています。
