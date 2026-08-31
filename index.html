@@ -303,25 +303,7 @@
 
       <div class="list-group list-group-flush" id="familyList"></div>
 
-      <!-- データ管理 (バックアップの書き出し / 読み込み) -->
-      <div class="card bg-dark text-light border-secondary my-3 p-3">
-        <h6 class="card-title fw-bold mb-1">💾 データ管理</h6>
-        <p class="small text-secondary mb-3">
-          家族掲示板の設定をファイルにバックアップしたり、新しい端末に復元したりできます。
-        </p>
-        
-        <div class="d-flex gap-2">
-          <!-- エクスポートボタン -->
-          <button type="button" class="btn btn-outline-info btn-sm flex-fill fw-bold" onclick="exportFamilyData()">
-            📤 バックアップ出力
-          </button>
-          
-          <!-- インポートボタン -->
-          <button type="button" class="btn btn-outline-light btn-sm flex-fill fw-bold" onclick="document.getElementById('importFileInput').click()">
-            📥 バックアップ復元
-          </button>
-        </div>
-      
+            
         <!-- JSON復元用の非表示ファイルインプット -->
         <input type="file" id="importFileInput" accept=".json" style="display: none;" onchange="importFamilyData(event)">
       </div>
