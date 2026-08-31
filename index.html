@@ -106,7 +106,7 @@
       box-shadow: none !important;
     }
     
-    /* --- 3. EVACUATED (避難完了 - Your Custom CSS) --- */
+    /* --- 3. EVACUATED (避難完了  */
     .btn-outline-blue {
       color: #066f8f;
       border: 2px solid #066f8f;
@@ -127,6 +127,11 @@
       background-color: #066f8f !important;
       border-color: #066f8f !important;
       box-shadow: none !important;
+    }
+    /* --- Matching Badge for EVACUATED (#066f8f) --- */
+    .bg-blue {
+      background-color: #066f8f !important;
+      color: #fff !important;
     }
     
     /* --- 4. NEED HELP (要救助) --- */
@@ -326,7 +331,7 @@
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content bg-dark text-light border-secondary">
           <div class="modal-header border-secondary">
-            <h5 class="modal-title" id="modalTitle">家族メンバーを追加</h5>
+            <h5 class="modal-title" id="modalTitle">家族メンバーを編集</h5>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
@@ -746,8 +751,9 @@
     // ------------------------------------------------------------------
     function getBadgeClass(status) {
       if (status === 'SAFE') return 'bg-success';
-      if (status === 'NEED HELP') return 'bg-danger';
       if (status === 'IN TRANSIT') return 'bg-warning text-dark';
+      if (status === 'EVACUATED') return 'bg-blue'; // Matches #066f8f
+      if (status === 'NEED HELP') return 'bg-soft-danger'; // Or 'bg-danger'
       return 'bg-secondary';
     }
   
