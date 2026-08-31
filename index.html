@@ -59,6 +59,12 @@
       animation: pulseBtn 0.7s infinite;
     }
 
+    .btn-soft-siren {
+      background-color: #c05621 !important; /* Soft warm terracotta */
+      border-color: #9c4215 !important;
+      color: #ffffff !important;
+    }
+
     /* --- Common Base & Mobile Fixes --- */
     .status-btn {
       -webkit-tap-highlight-color: transparent; /* Prevent gray/white overlay on mobile tap */
@@ -196,7 +202,7 @@
         </label>
       </div>
       
-      <button id="sirenBtn" type="button" class="btn btn-danger w-100 py-3 fw-bold fs-5 shadow d-flex align-items-center justify-content-center gap-2" onclick="toggleSiren()">
+      <button id="sirenBtn" type="button" class="btn btn-soft-siren w-100 py-3 fw-bold fs-5 shadow d-flex align-items-center justify-content-center gap-2" onclick="toggleSiren()">
         🔊 緊急アラーム開始
       </button>
       
