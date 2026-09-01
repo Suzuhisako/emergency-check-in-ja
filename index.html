@@ -165,6 +165,18 @@
       }
     }  
 
+    .btn-gps-cyan {
+      background-color: #0e7490 !important; /* Soft indigo-cyan */
+      border-color: #155e75 !important;
+      color: #ffffff !important;
+    }
+    
+    .btn-gps-cyan:hover,
+    .btn-gps-cyan:active {
+      background-color: #155e75 !important;
+      border-color: #164e63 !important;
+    }
+
     .btn-copy-sms {
       background-color: #064881 !important; 
       border-color: #064881!important;
@@ -285,7 +297,7 @@
       <!-- Location Capture -->
       <div class="mb-4">
         <label class="form-label fw-bold small text-light mb-1">位置情報の取得</label>
-        <button type="button" class="btn btn-secondary w-100 py-2 fw-bold" onclick="getGPSLocation()">
+        <button type="button" class="btn btn-gps-cyan w-100 py-2 fw-bold" onclick="getGPSLocation()">
           📍 GPS位置情報を自動取得
         </button>
         
