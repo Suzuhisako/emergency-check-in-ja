@@ -177,6 +177,12 @@
       border-color: #2c5282 !important;
     }
 
+    .btn-add {
+      background-color: #056327 !important; 
+      border-color: #056327 !important;
+      color: #ffffff !important;
+    }    
+
     /* キーフレームアニメーション */
     @keyframes pulse {
       0% { opacity: 1; transform: scale(1); }
@@ -334,7 +340,7 @@
         <h2 class="h6 text-uppercase text-secondary fw-bold m-2 text-nowrap">2. 家族の安否情報</h2>
         <div class="d-flex flex-wrap gap-1 ms-auto">
           <button type="button" class="btn btn-sm btn-copy-sms py-0 px-2" onclick="openImportSMSModal()">📥 SMS取り込み</button>
-          <button type="button" class="btn btn-sm btn-success py-0 px-2" onclick="openAddModal()">+ 追加</button>
+          <button type="button" class="btn btn-sm btn-add py-0 px-2" onclick="openAddModal()">+ 追加</button>
           <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2" onclick="simulateIncomingPacket()">メッシュホップ</button>
         </div>
       </div>
