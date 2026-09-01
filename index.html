@@ -165,6 +165,18 @@
       }
     }  
 
+    .btn-copy-sms {
+      background-color: #2b6cb0 !important; 
+      border-color: #2b6cb0 !important;
+      color: #ffffff !important;
+    }
+    
+    .btn-copy-sms:hover,
+    .btn-copy-sms:active {
+      background-color: #2c5282 !important;
+      border-color: #2c5282 !important;
+    }
+
     /* キーフレームアニメーション */
     @keyframes pulse {
       0% { opacity: 1; transform: scale(1); }
@@ -303,7 +315,7 @@
       </div>
 
       <!-- +メッセージ / LINE用に最適化されたコピーボタン -->
-      <button type="button" class="btn btn-primary w-100 py-2 fw-bold mb-2" onclick="copyAndOpenSMS()">
+      <button type="button" class="btn btn-copy-sms w-100 py-2 fw-bold mb-2" onclick="copyAndOpenSMS()">
         📋 自分の安否情報をコピーしてメッセージアプリを起動
       </button>
       
