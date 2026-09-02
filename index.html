@@ -786,16 +786,15 @@
         return alert("送信先の家族を選択してください！");
       }
     
-      // Build the queue of phone numbers
       sendQueue = Array.from(checkedBoxes).map(cb => cb.value).filter(Boolean);
       currentQueueIndex = 0;
     
-      showSequentialStepModal();
+      processNextSequentialSend();
     }
     
-    function showSequentialStepModal() {
+    function processNextSequentialSend() {
       if (currentQueueIndex >= sendQueue.length) {
-        alert("全員への送信処理が完了しました！");
+        alert("全員への個別送信処理が完了しました！");
         sendQueue = [];
         currentQueueIndex = 0;
         return;
@@ -804,26 +803,24 @@
       const rawPhone = sendQueue[currentQueueIndex];
       const cleanPhone = typeof normalizePhone === 'function' ? normalizePhone(rawPhone) : rawPhone;
       const smsMessage = buildSmsText();
-      
-      // Copy text to clipboard in advance
+    
+      // 1. Copy formatted status to clipboard first
       if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(smsMessage).catch(e => console.warn(e));
+        navigator.clipboard.writeText(smsMessage).catch(err => console.warn(err));
       }
     
-      // Construct target link
-      const smsUri = `sms:${cleanPhone}?body=${encodeURIComponent(smsMessage)}`;
+      // 2. Prepare clean SMS link (No ?body= to prevent +Message crash/flicker)
+      const cleanSmsUri = `sms:${cleanPhone}`;
     
-      // Display step info directly using a browser prompt with the direct URL
-      const progressText = `${currentQueueIndex + 1} / ${sendQueue.length} 人目 (${cleanPhone})`;
-      
-      // Create an immediate direct trigger attempt that doesn't trigger popup blockers
+      // Advance index for the next person
       currentQueueIndex++;
-      
-      // Direct anchor trigger - most reliable across iOS and Android
+    
+      // 3. Trigger OS app switch cleanly via anchor element
       const link = document.createElement('a');
-      link.href = smsUri;
-      link.rel = 'noopener noreferrer';
+      link.href = cleanSmsUri;
+      document.body.appendChild(link);
       link.click();
+      document.body.removeChild(link);
     }
     
     // ------------------------------------------------------------------
