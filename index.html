@@ -696,8 +696,87 @@
       }
     } 
 
+    function copyAndOpenSMS() {    
+      // 1. ローカルにデータを保存
+      if (typeof saveData === 'function') {
+        saveData();
+      }
+    
+      // 2. UIからステータスを取得
+      let selectedStatus = typeof currentStatus !== 'undefined' ? currentStatus : "SAFE";  
+      const checkedRadio = document.querySelector('input[name="statusRadio"]:checked');
+      if (checkedRadio) {
+        selectedStatus = checkedRadio.value;
+      } 
+      else {
+        const activeBtn = document.querySelector('.status-btn.active, .btn-check:checked + label');
+        if (activeBtn) {
+          selectedStatus = activeBtn.innerText.trim();
+        }
+      }
+    
+      // 3. メモ入力を取得
+      const noteInput = document.getElementById("statusNote");
+      const noteText = noteInput && noteInput.value.trim() !== "" ? noteInput.value.trim() : "メモなし";
+    
+      // 4. バッテリー残量を取得
+      const batteryVal = (typeof liveBattery !== "undefined" && liveBattery !== null) ? liveBattery : "100";
+    
+      // 5. GPS座標を取得 (localStorageからのフォールバック付き)
+      let gpsString = "N/A";
+      let coords = (typeof currentCoords !== 'undefined' && currentCoords) ? currentCoords : null;
+      if (!coords) {
+        const savedData = localStorage.getItem("my_emergency_status");
+        if (savedData) {
+          try {
+            const parsed = JSON.parse(savedData);
+            if (parsed.coords) coords = parsed.coords;
+          } catch (e) {
+            console.warn("Could not parse saved coords", e);
+          }
+        }
+      }
+    
+      // GoogleマップURLの生成
+      if (coords && coords.lat && coords.lon) {
+        gpsString = `https://maps.google.com/?q=${coords.lat},${coords.lon}`;
+      }
+    
+      // 6. 電話番号の収集 (選択されたチェックボックスを取得)
+      const checkedBoxes = document.querySelectorAll('.recipient-checkbox:checked');
+      const phoneNumbers = Array.from(checkedBoxes).map(cb => cb.value);          
+    
+      if (phoneNumbers.length === 0) {
+        alert("送信先を少なくとも1人選択してください！");
+        return;
+      }
+    
+      // OSごとに区切り文字を切り替え (iOS: ;, Android: ,)
+      const isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+      const delimiter = isiOS ? ";" : ",";
+      const recipientString = phoneNumbers.join(delimiter);
+    
+      // 7. メッセージペイロードの構築
+      const textToCopy = `【緊急安否確認】 状況: ${selectedStatus} | 位置: ${gpsString} | 電池: ${batteryVal}% | メモ: ${noteText}`;
+    
+      // 8. クリップボードへコピーしてSMSアプリを起動
+      navigator.clipboard.writeText(textToCopy).then(() => {
+        const alertElem = document.getElementById("copyAlert");
+        if (alertElem) {
+          alertElem.classList.remove("d-none");
+          setTimeout(() => alertElem.classList.add("d-none"), 4000);
+        }
+    
+        setTimeout(() => {
+          window.location.href = `sms:${recipientString}`;
+        }, 1500); 
+      }).catch(() => {
+        alert("送信テキスト: " + textToCopy);
+      });
+    }
+
     // --- 1. Centralized SMS Message Builder ---
-    function buildSmsText() {
+   /* function buildSmsText() {
       let selectedStatus = typeof currentStatus !== 'undefined' ? currentStatus : "SAFE";  
       const checkedRadio = document.querySelector('input[name="statusRadio"]:checked');
       if (checkedRadio) {
@@ -765,7 +844,7 @@
       }).catch(() => {
         alert("送信テキスト: " + textToCopy);
       });
-    } 
+    } */
     
     // ------------------------------------------------------------------
     // 4. Family Board & Modal Logic
