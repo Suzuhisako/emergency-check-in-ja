@@ -331,18 +331,10 @@
       </div>
 
       <!-- Send Action Buttons -->
-      <div class="d-flex flex-column gap-2 mb-2">
-        <!-- Primary: Batch Copy & Launch SMS App -->
-        <button type="button" class="btn btn-copy-sms btn-lg w-100 py-2 fw-bold" onclick="copyAndOpenSMS()">
+      <button type="button" class="btn btn-copy-sms btn-lg w-100 py-2 fw-bold" onclick="copyAndOpenSMS()">
           📋 自分の安否情報をコピーしてメッセージアプリを起動
-        </button>
-      
-        <!-- Secondary: Sequential SMS (1 person at a time for congested networks) -->
-        <button type="button" class="btn btn-outline-info w-100 py-2 fw-bold" onclick="startSequentialSMS()">
-          📲 1人ずつ順次送信 (回線混雑時用)
-        </button>
-      </div>     
-      
+      </button>   
+          
       <div id="copyAlert" class="alert alert-success mt-2 py-1 small d-none text-center" role="alert">
         クリップボードにコピーしました！メッセージアプリに切り替えて長押しで貼り付けてください。
       </div>
@@ -773,55 +765,7 @@
       }).catch(() => {
         alert("送信テキスト: " + textToCopy);
       });
-    }
-    
-    let sendQueue = [];
-    let currentQueueIndex = 0;
-    
-    function startSequentialSMS() {
-      if (typeof saveData === 'function') saveData();
-    
-      const checkedBoxes = document.querySelectorAll('.recipient-checkbox:checked');
-      if (checkedBoxes.length === 0) {
-        return alert("送信先の家族を選択してください！");
-      }
-    
-      sendQueue = Array.from(checkedBoxes).map(cb => cb.value).filter(Boolean);
-      currentQueueIndex = 0;
-    
-      processNextSequentialSend();
-    }
-    
-    function processNextSequentialSend() {
-      if (currentQueueIndex >= sendQueue.length) {
-        alert("全員への個別送信処理が完了しました！");
-        sendQueue = [];
-        currentQueueIndex = 0;
-        return;
-      }
-    
-      const rawPhone = sendQueue[currentQueueIndex];
-      const cleanPhone = typeof normalizePhone === 'function' ? normalizePhone(rawPhone) : rawPhone;
-      const smsMessage = buildSmsText();
-    
-      // 1. Copy formatted status to clipboard first
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(smsMessage).catch(err => console.warn(err));
-      }
-    
-      // 2. Prepare clean SMS link (No ?body= to prevent +Message crash/flicker)
-      const cleanSmsUri = `sms:${cleanPhone}`;
-    
-      // Advance index for the next person
-      currentQueueIndex++;
-    
-      // 3. Trigger OS app switch cleanly via anchor element
-      const link = document.createElement('a');
-      link.href = cleanSmsUri;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
+    } 
     
     // ------------------------------------------------------------------
     // 4. Family Board & Modal Logic
