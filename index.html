@@ -775,31 +775,27 @@
       });
     }
     
-    // Global queue state stored in memory or localStorage
     let sendQueue = [];
     let currentQueueIndex = 0;
     
     function startSequentialSMS() {
       if (typeof saveData === 'function') saveData();
     
-      // Find all checked boxes
       const checkedBoxes = document.querySelectorAll('.recipient-checkbox:checked');
       if (checkedBoxes.length === 0) {
         return alert("送信先の家族を選択してください！");
       }
     
-      // Get recipient phone numbers
+      // Build the queue of phone numbers
       sendQueue = Array.from(checkedBoxes).map(cb => cb.value).filter(Boolean);
       currentQueueIndex = 0;
     
-      // Start step 1
-      processQueueStep();
+      showSequentialStepModal();
     }
     
-    function processQueueStep() {
+    function showSequentialStepModal() {
       if (currentQueueIndex >= sendQueue.length) {
-        alert("全員への個別送信処理が完了しました！");
-        // Reset state
+        alert("全員への送信処理が完了しました！");
         sendQueue = [];
         currentQueueIndex = 0;
         return;
@@ -808,32 +804,26 @@
       const rawPhone = sendQueue[currentQueueIndex];
       const cleanPhone = typeof normalizePhone === 'function' ? normalizePhone(rawPhone) : rawPhone;
       const smsMessage = buildSmsText();
+      
+      // Copy text to clipboard in advance
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(smsMessage).catch(e => console.warn(e));
+      }
     
-      // Build target link (single recipient)
+      // Construct target link
       const smsUri = `sms:${cleanPhone}?body=${encodeURIComponent(smsMessage)}`;
     
-      // Copy text to clipboard as safety net
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(smsMessage).catch(err => console.warn("Clipboard copy skipped", err));
-      }
-    
-      // Confirm with user before launching native app for person N
-      const memberNumber = currentQueueIndex + 1;
-      const totalMembers = sendQueue.length;
+      // Display step info directly using a browser prompt with the direct URL
+      const progressText = `${currentQueueIndex + 1} / ${sendQueue.length} 人目 (${cleanPhone})`;
       
-      const proceed = confirm(`${memberNumber} / ${totalMembers} 人目 (${cleanPhone}) へ送信します。\n「OK」を押すとメッセージアプリが開きます。送信後にこの画面へ戻ってください。`);
-    
-      if (proceed) {
-        // Advance index before opening app
-        currentQueueIndex++;
-        // Launch +Message / SMS app
-        window.location.href = smsUri;
-      } else {
-        // User cancelled sequence
-        alert("順次送信を中断しました。");
-        sendQueue = [];
-        currentQueueIndex = 0;
-      }
+      // Create an immediate direct trigger attempt that doesn't trigger popup blockers
+      currentQueueIndex++;
+      
+      // Direct anchor trigger - most reliable across iOS and Android
+      const link = document.createElement('a');
+      link.href = smsUri;
+      link.rel = 'noopener noreferrer';
+      link.click();
     }
     
     // ------------------------------------------------------------------
