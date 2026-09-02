@@ -330,10 +330,18 @@
         </div>
       </div>
 
-      <!-- +メッセージ / LINE用に最適化されたコピーボタン -->
-      <button type="button" class="btn btn-copy-sms btn-lg w-100 py-2 fw-bold mb-2" onclick="copyAndOpenSMS()">
-        📋 自分の安否情報をコピーしてメッセージアプリを起動
-      </button>
+      <!-- Send Action Buttons -->
+      <div class="d-flex flex-column gap-2 mb-2">
+        <!-- Primary: Batch Copy & Open -->
+        <button type="button" class="btn btn-copy-sms btn-lg w-100 py-2 fw-bold" onclick="copyAndOpenSMS()">
+          📋 自分の安否情報をコピーしてメッセージアプリを起動
+        </button>
+      
+        <!-- Secondary: Sequential SMS for congested networks -->
+        <button type="button" class="btn btn-outline-info w-100 py-2 fw-bold" onclick="startSequentialSMS()">
+          📲 1人ずつ順次送信 (混雑時用)
+        </button>
+      </div>
       
       <div id="copyAlert" class="alert alert-success mt-2 py-1 small d-none text-center" role="alert">
         クリップボードにコピーしました！メッセージアプリに切り替えて長押しで貼り付けてください。
@@ -774,7 +782,45 @@
         alert("送信テキスト: " + textToCopy);
       });
     }
-  
+
+    let sendQueue = [];
+    let currentQueueIndex = 0;
+    
+    function startSequentialSMS() {
+      // Get all checked family members from your existing UI checkboxes
+      const checkboxes = document.querySelectorAll('.recipient-checkbox:checked');
+      sendQueue = Array.from(checkboxes).map(cb => {
+        return familyData.find(m => m.id === cb.value);
+      }).filter(Boolean);
+    
+      if (sendQueue.length === 0) {
+        return alert("送信先の家族を選択してください。");
+      }
+    
+      currentQueueIndex = 0;
+      sendNextSMSInQueue();
+    }
+    
+    function sendNextSMSInQueue() {
+      if (currentQueueIndex >= sendQueue.length) {
+        alert("全全員への個別送信処理が完了しました！");
+        return;
+      }
+    
+      const member = sendQueue[currentQueueIndex];
+      const smsMessage = buildSMSMessageText(); // Existing message builder
+      const cleanPhone = normalizePhone(member.phone);
+    
+      // Construct native SMS URI for a single recipient
+      const smsUri = `sms:${cleanPhone}?body=${encodeURIComponent(smsMessage)}`;
+      
+      // Advance index for the next step
+      currentQueueIndex++;
+    
+      // Open native SMS app for this member
+      window.location.href = smsUri;
+    }
+    
     // ------------------------------------------------------------------
     // 4. Family Board & Modal Logic
     // ------------------------------------------------------------------
