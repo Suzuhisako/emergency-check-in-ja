@@ -152,6 +152,11 @@
       box-shadow: none !important;
     }
 
+    .btn-badge-danger {
+      background-color: #dc3545 !important; 
+      color: #ffffff !important;
+    }
+
     /* Touch device adjustments (GPS button only) */
     @media (hover: none), (pointer: coarse) {
       #btn-gps:focus,
@@ -785,7 +790,7 @@
       if (status === 'SAFE') return 'bg-success';
       if (status === 'IN TRANSIT') return 'bg-amber'; 
       if (status === 'EVACUATED') return 'bg-blue';
-      if (status === 'NEED HELP') return 'bg-soft-danger';
+      if (status === 'NEED HELP') return 'btn-badge-danger';
       return 'bg-secondary';
     }
   
