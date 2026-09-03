@@ -552,40 +552,40 @@
       } else if (audioCtx.state === 'suspended') {
         audioCtx.resume();
       }
-  
+    
       oscillator = audioCtx.createOscillator();
       gainNode = audioCtx.createGain();
-  
+    
       oscillator.type = 'sawtooth';
       gainNode.gain.setValueAtTime(0.8, audioCtx.currentTime);
-  
+    
       oscillator.connect(gainNode);
       gainNode.connect(audioCtx.destination);
-  
+    
       oscillator.start();
       isSirenActive = true;
-  
+    
       let highTone = false;
       sirenInterval = setInterval(() => {
         if (!oscillator || !audioCtx) return;
         oscillator.frequency.setValueAtTime(highTone ? 800 : 1200, audioCtx.currentTime);
         highTone = !highTone;
       }, 350);
-  
+    
       if (document.getElementById("strobeToggle")?.checked) {
         document.body.classList.add("strobe-active");
       }
-  
+    
       const btn = document.getElementById("sirenBtn");
       const status = document.getElementById("sirenStatus");
       if (btn) {
-        btn.classList.remove("btn-danger");
+        btn.classList.remove("btn-soft-siren");
         btn.classList.add("btn-warning", "text-dark", "pulse-animation");
         btn.innerText = "🛑 アラーム停止";
       }
       if (status) status.classList.remove("d-none");
     }
-  
+    
     function stopSiren() {
       if (sirenInterval) { clearInterval(sirenInterval); sirenInterval = null; }
       if (oscillator) { oscillator.stop(); oscillator.disconnect(); oscillator = null; }
@@ -594,19 +594,14 @@
       document.body.classList.remove("strobe-active");
       const btn = document.getElementById("sirenBtn");
       const status = document.getElementById("sirenStatus");
-      
+    
       if (btn) {
-        // 1. Remove active warning styling
-        btn.classList.remove("btn-warning", "text-dark", "pulse-animation");
-        
-        // 2. Restore original red alert state
-        btn.classList.add("btn-danger");
+        // Exact restoration of your original HTML class string
+        btn.className = "btn btn-soft-siren w-100 py-3 fw-bold fs-4 shadow d-flex align-items-center justify-content-center gap-2";
         btn.innerText = "🔊 緊急アラーム開始";
-        
-        // 3. Clear focus/active state from mobile browser tap
-        btn.blur(); 
+        btn.blur();
       }
-      
+    
       if (status) status.classList.add("d-none");
     }
   
