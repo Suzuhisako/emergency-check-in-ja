@@ -590,16 +590,23 @@
       if (sirenInterval) { clearInterval(sirenInterval); sirenInterval = null; }
       if (oscillator) { oscillator.stop(); oscillator.disconnect(); oscillator = null; }
       isSirenActive = false;
-  
+    
       document.body.classList.remove("strobe-active");
       const btn = document.getElementById("sirenBtn");
       const status = document.getElementById("sirenStatus");
+      
       if (btn) {
+        // 1. Remove active warning styling
         btn.classList.remove("btn-warning", "text-dark", "pulse-animation");
+        
+        // 2. Restore original red alert state
         btn.classList.add("btn-danger");
         btn.innerText = "🔊 緊急アラーム開始";
-        btn.blur();         
+        
+        // 3. Clear focus/active state from mobile browser tap
+        btn.blur(); 
       }
+      
       if (status) status.classList.add("d-none");
     }
   
