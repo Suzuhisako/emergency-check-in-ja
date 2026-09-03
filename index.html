@@ -598,6 +598,7 @@
         btn.classList.remove("btn-warning", "text-dark", "pulse-animation");
         btn.classList.add("btn-danger");
         btn.innerText = "🔊 緊急アラーム開始";
+        btn.blur();         
       }
       if (status) status.classList.add("d-none");
     }
