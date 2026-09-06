@@ -296,31 +296,6 @@
         </div>
       </div>
       
-      <!-- 保存 & ローカルストレージボタン -->
-      <!-- <button id="saveOfflineBtn" type="button" class="btn btn-secondary w-100 py-2 fw-bold mb-1" onclick="saveData()">
-        💾 安否/状況を保存 (オフライン)
-      </button>
-      <small class="text-light small d-block mb-3">
-        💡 タップすると、SMSメッセージを送信せずに端末内（オフライン）に現在の安否を保存します。
-      </small> -->
-
-      <div class="card card-dark p-3 mb-4 border-secondary">
-        <label class="form-label text-light fw-bold mb-2">📨 送信先の選択</label>
-      
-        <!-- "Select All" Quick Toggle -->
-        <div class="form-check mb-2 pb-2 border-bottom border-secondary">
-          <input class="form-check-input" type="checkbox" id="selectAllRecipients" onchange="toggleAllRecipients(this)">
-          <label class="form-check-label text-warning fw-bold" for="selectAllRecipients">
-            👥 全員を選択 
-          </label>
-        </div>
-      
-        <!-- Container dynamically populated with family members -->
-        <div id="recipientCheckboxesContainer" class="d-flex flex-column gap-2">
-          <!-- Checkboxes will be populated dynamically by JavaScript -->
-        </div>
-      </div>
-
       <!-- Send Action Buttons -->
       <button type="button" class="btn btn-copy-sms btn-lg w-100 py-2 fw-bold" onclick="copyAndOpenSMS()">
           📋 自分の安否情報をコピーしてメッセージアプリを起動
@@ -767,78 +742,7 @@
       }).catch(() => {
         alert("送信テキスト: " + textToCopy);
       });
-    }
-
-    // --- 1. Centralized SMS Message Builder ---
-   /* function buildSmsText() {
-      let selectedStatus = typeof currentStatus !== 'undefined' ? currentStatus : "SAFE";  
-      const checkedRadio = document.querySelector('input[name="statusRadio"]:checked');
-      if (checkedRadio) {
-        selectedStatus = checkedRadio.value;
-      } else {
-        const activeBtn = document.querySelector('.status-btn.active, .btn-check:checked + label');
-        if (activeBtn) {
-          selectedStatus = activeBtn.innerText.trim();
-        }
-      }
-    
-      const noteInput = document.getElementById("statusNote");
-      const noteText = noteInput && noteInput.value.trim() !== "" ? noteInput.value.trim() : "メモなし";
-      const batteryVal = (typeof liveBattery !== "undefined" && liveBattery !== null) ? liveBattery : "100";
-    
-      let gpsString = "N/A";
-      let coords = (typeof currentCoords !== 'undefined' && currentCoords) ? currentCoords : null;
-      if (!coords) {
-        const savedData = localStorage.getItem("my_emergency_status");
-        if (savedData) {
-          try {
-            const parsed = JSON.parse(savedData);
-            if (parsed.coords) coords = parsed.coords;
-          } catch (e) {
-            console.warn("Could not parse saved coords", e);
-          }
-        }
-      }
-    
-      if (coords && coords.lat && coords.lon) {
-        gpsString = `https://maps.google.com/?q=${coords.lat},${coords.lon}`;
-      }
-    
-      return `【緊急安否確認】 状況: ${selectedStatus} | 位置: ${gpsString} | 電池: ${batteryVal}% | メモ: ${noteText}`;
-    }
-    
-    // --- 2. Batch Copy & Open SMS ---
-    function copyAndOpenSMS() {    
-      if (typeof saveData === 'function') saveData();
-    
-      const checkedBoxes = document.querySelectorAll('.recipient-checkbox:checked');
-      const phoneNumbers = Array.from(checkedBoxes).map(cb => cb.value);          
-    
-      if (phoneNumbers.length === 0) {
-        alert("送信先を少なくとも1人選択してください！");
-        return;
-      }
-    
-      const isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-      const delimiter = isiOS ? ";" : ",";
-      const recipientString = phoneNumbers.join(delimiter);
-    
-      const textToCopy = buildSmsText();
-    
-      navigator.clipboard.writeText(textToCopy).then(() => {
-        const alertElem = document.getElementById("copyAlert");
-        if (alertElem) {
-          alertElem.classList.remove("d-none");
-          setTimeout(() => alertElem.classList.add("d-none"), 4000);
-        }
-    
-        setTimeout(() => {
-          window.location.href = `sms:${recipientString}`;
-        }, 1500); 
-      }).catch(() => {
-        alert("送信テキスト: " + textToCopy);
-      });
-    } */
+    }   
     
     // ------------------------------------------------------------------
     // 4. Family Board & Modal Logic
@@ -956,27 +860,20 @@
       });
     }
     
-    // Master Toggle Function
-    function toggleAllRecipients(masterCheckbox) {
-      const checkboxes = document.querySelectorAll('.recipient-checkbox');
-      checkboxes.forEach(cb => cb.checked = masterCheckbox.checked);
-    }   
-
     function populateSenderDropdown() {
-          const select = document.getElementById('smsSenderSelect');
-          if (!select) return;
+      const select = document.getElementById('smsSenderSelect');
+      if (!select) return;      
+        select.innerHTML = '<option value="">-- SMS本文から自動検出 --</option>';
       
-          select.innerHTML = '<option value="">-- SMS本文から自動検出 --</option>';
-      
-          familyData.forEach(member => {
-            if (member.phone) {
-              const option = document.createElement('option');
-              option.value = member.phone;
-              option.textContent = `👤 ${member.name} (${member.phone})`;
-              select.appendChild(option);
-            }
-          });
-        }
+        familyData.forEach(member => {
+          if (member.phone) {
+            const option = document.createElement('option');
+            option.value = member.phone;
+            option.textContent = `👤 ${member.name} (${member.phone})`;
+            select.appendChild(option);
+          }
+      });
+    }
       
     function loadData() {
       try {
@@ -1371,60 +1268,7 @@
       }
     }
   
-   /* function exportFamilyData() {
-      if (!familyData || familyData.length === 0) {
-        alert("エクスポートする家族データがありません。");
-        return;
-      }
-  
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(familyData, null, 2));
-      const downloadAnchor = document.createElement('a');
-      const dateStr = new Date().toISOString().slice(0, 10);
-  
-      downloadAnchor.setAttribute("href", dataStr);
-      downloadAnchor.setAttribute("download", `family_board_backup_${dateStr}.json`);
-      document.body.appendChild(downloadAnchor);
-  
-      downloadAnchor.click();
-      downloadAnchor.remove();
-    }
-  
-    function importFamilyData(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-    
-      const reader = new FileReader();
-    
-      reader.onload = function(e) {
-        try {
-          const importedData = JSON.parse(e.target.result);
-    
-          if (!Array.isArray(importedData)) {
-            alert("無効なバックアップファイル形式です。JSONの配列形式が必要です。");
-            return;
-          }
-    
-          if (confirm(`バックアップファイルから ${importedData.length} 名のメンバー情報を復元しますか？`)) {
-            familyData = importedData;
-    
-            localStorage.setItem("family_board_status", JSON.stringify(familyData));
-    
-            renderBoard();
-            populateRecipientCheckboxes();
-    
-            alert("家族ボードのデータを正常に復元しました！");
-          }
-        } catch (err) {
-          alert("バックアップファイルの読み込みエラー: " + err.message);
-        }
-    
-        event.target.value = '';
-      };
-    
-      reader.readAsText(file);
-    }*/
-
-     // 統合されたイベントリスナー
+    // 統合されたイベントリスナー
     document.addEventListener("DOMContentLoaded", () => {
       loadData(); // loadData already loads status and calls selectStatus()
       initBatteryAPI();
