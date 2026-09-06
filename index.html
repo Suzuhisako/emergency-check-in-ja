@@ -287,18 +287,18 @@
       <div class="mb-4">
         <label class="form-label fw-bold small text-light mb-1">位置情報の取得</label>
         <button type="button" class="btn btn-gps-cyan w-100 py-2 fw-bold" onclick="getGPSLocation()">
-          📍 GPS位置情報を自動取得
+          📍 GPS自動取得
         </button>
         
-        <div class="text-center mt-2">
-          <div id="gpsStatus" class="text-light small d-block mb-3">上のボタンを押して位置情報を添付する。</div>
+        <---<div class="text-center mt-2">
+          <div id="gpsStatus" class="text-light small d-block mb-3">上のボタンを押して位置情報を添付する。</div>-->
           <!--<div id="gpsCoordsDisplay" class="font-monospace text-info fw-bold mt-1 fs-6 d-none"></div> -->
-        </div>
+       <--- </div> -->
       </div>
       
       <!-- Send Action Buttons -->
       <button type="button" class="btn btn-copy-sms btn-lg w-100 py-2 fw-bold" onclick="copyAndOpenSMS()">
-          📋 自分の安否情報をコピーしてメッセージアプリを起動
+          📋 自分の安否をメッセージアプリで送信
       </button>   
           
       <div id="copyAlert" class="alert alert-success mt-2 py-1 small d-none text-center" role="alert">
