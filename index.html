@@ -666,32 +666,31 @@
     } 
 
     function copyAndOpenSMS() {    
-      // 1. ローカルにデータを保存
+      // 1. Save data locally
       if (typeof saveData === 'function') {
         saveData();
       }
     
-      // 2. UIからステータスを取得
+      // 2. Acquire status from UI
       let selectedStatus = typeof currentStatus !== 'undefined' ? currentStatus : "SAFE";  
       const checkedRadio = document.querySelector('input[name="statusRadio"]:checked');
       if (checkedRadio) {
         selectedStatus = checkedRadio.value;
-      } 
-      else {
+      } else {
         const activeBtn = document.querySelector('.status-btn.active, .btn-check:checked + label');
         if (activeBtn) {
           selectedStatus = activeBtn.innerText.trim();
         }
       }
     
-      // 3. メモ入力を取得
+      // 3. Acquire notes (English fallback)
       const noteInput = document.getElementById("statusNote");
-      const noteText = noteInput && noteInput.value.trim() !== "" ? noteInput.value.trim() : "メモなし";
+      const noteText = noteInput && noteInput.value.trim() !== "" ? noteInput.value.trim() : "No note";
     
-      // 4. バッテリー残量を取得
+      // 4. Acquire battery level
       const batteryVal = (typeof liveBattery !== "undefined" && liveBattery !== null) ? liveBattery : "100";
     
-      // 5. GPS座標を取得 (localStorageからのフォールバック付き)
+      // 5. Capture GPS coordinates (with fallback from localStorage)
       let gpsString = "N/A";
       let coords = (typeof currentCoords !== 'undefined' && currentCoords) ? currentCoords : null;
       if (!coords) {
@@ -706,29 +705,29 @@
         }
       }
     
-      // GoogleマップURLの生成
+      // Generate Google Maps URL
       if (coords && coords.lat && coords.lon) {
         gpsString = `https://maps.google.com/?q=${coords.lat},${coords.lon}`;
       }
     
-      // 6. 電話番号の収集 (選択されたチェックボックスを取得)
+      // 6. Collect phone numbers
       const checkedBoxes = document.querySelectorAll('.recipient-checkbox:checked');
       const phoneNumbers = Array.from(checkedBoxes).map(cb => cb.value);          
     
       if (phoneNumbers.length === 0) {
-        alert("送信先を少なくとも1人選択してください！");
+        alert("Select at least one recipient!");
         return;
       }
     
-      // OSごとに区切り文字を切り替え (iOS: ;, Android: ,)
+      // Switch delimiter based on OS (iOS: ;, Android: ,)
       const isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
       const delimiter = isiOS ? ";" : ",";
       const recipientString = phoneNumbers.join(delimiter);
     
-      // 7. メッセージペイロードの構築
-      const textToCopy = `【緊急安否確認】 状況: ${selectedStatus} | 位置: ${gpsString} | 電池: ${batteryVal}% | メモ: ${noteText}`;
+      // 7. Construct message payload (English header)
+      const textToCopy = `【Emergency Check-In】 status: ${selectedStatus} | location: ${gpsString} | battery: ${batteryVal}% | note: ${noteText}`;
     
-      // 8. クリップボードへコピーしてSMSアプリを起動
+      // 8. Copy to clipboard and open SMS app 
       navigator.clipboard.writeText(textToCopy).then(() => {
         const alertElem = document.getElementById("copyAlert");
         if (alertElem) {
@@ -740,9 +739,9 @@
           window.location.href = `sms:${recipientString}`;
         }, 1500); 
       }).catch(() => {
-        alert("送信テキスト: " + textToCopy);
+        alert("Text copied: " + textToCopy);
       });
-    }   
+    }  
     
     // ------------------------------------------------------------------
     // 4. Family Board & Modal Logic
