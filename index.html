@@ -1073,6 +1073,11 @@
       }
       
       document.getElementById("smsTextarea").value = "";
+    
+      // 1. Rebuild the family dropdown with current familyData
+      populateSenderDropdown();
+    
+      // 2. Show the modal instance
       if (!smsModalInstance) {
         smsModalInstance = new bootstrap.Modal(modalEl);
       }
