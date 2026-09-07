@@ -829,12 +829,7 @@
           }
         } else {
           familyData = typeof DEFAULT_FAMILY !== "undefined" ? [...DEFAULT_FAMILY] : [];
-        }
-    
-        // Populate dropdowns before status selection
-        if (typeof populateRecipientCheckboxes === "function") {
-          populateRecipientCheckboxes();
-        }
+        }       
     
         // 2. Load personal emergency status
         const savedStatus = localStorage.getItem("my_emergency_status");
@@ -849,10 +844,7 @@
           }
         }
     
-        const select = document.getElementById("smsRecipient");
-        if (select) select.value = "";
-    
-        // 3. Render UI cleanly
+       // 3. Render UI cleanly
         if (typeof selectStatus === "function") selectStatus(currentStatus);
         if (typeof renderBoard === "function") renderBoard();
     
@@ -1017,8 +1009,7 @@
       }
     
       if (typeof saveData === "function") saveData();
-      if (typeof renderBoard === "function") renderBoard();
-      if (typeof populateRecipientCheckboxes === "function") populateRecipientCheckboxes();
+      if (typeof renderBoard === "function") renderBoard();     
     
       if (document.activeElement) document.activeElement.blur();
       if (typeof familyModalInstance !== "undefined" && familyModalInstance) {
@@ -1031,7 +1022,6 @@
       familyData = familyData.filter(m => String(m.id) !== String(id));
       if (typeof saveData === "function") saveData();
       renderBoard();
-      if (typeof populateRecipientCheckboxes === "function") populateRecipientCheckboxes();
     }
   
     function normalizePhone(phoneStr) {
@@ -1221,13 +1211,6 @@
       const noteInput = document.getElementById("statusNote");
       if (noteInput) {
         noteInput.addEventListener("input", () => {
-          saveData();
-        });
-      }
-    
-      const smsRecipient = document.getElementById("smsRecipient");
-      if (smsRecipient) {
-        smsRecipient.addEventListener("change", () => {
           saveData();
         });
       }
