@@ -776,7 +776,7 @@
         // Safe helper function calls
         const safePhoneNorm = (typeof normalizePhone === "function" && m.phone) ? normalizePhone(m.phone) : m.phone;
         const safePhoneDisp = (typeof formatPhoneDisplay === "function" && m.phone) ? formatPhoneDisplay(m.phone) : m.phone;
-        const safeBadge = m.badgeClass || (typeof getBadgeClass === "function" ? getBadgeClass(m.status) : "bg-success");
+        const safeBadge = m.badgeClass || (typeof getBadgeClass === "function" ? getBadgeClass(m.status) : "bg-safe-custom");
     
         return `
           <div class="list-group-item bg-transparent text-light border-secondary px-0 py-2">
@@ -801,50 +801,6 @@
       }).join('');
     }
   
-    // Render recipient checkboxes from familyData    
-    function populateRecipientCheckboxes() {
-      const container = document.getElementById('recipientCheckboxesContainer');
-      const masterToggle = document.getElementById('selectAllRecipients');
-      if (!container) return;
-    
-      container.innerHTML = '';
-    
-      // Handle zero registered members
-      if (!familyData || familyData.length === 0) {
-        container.innerHTML = `
-          <div class="text-muted small py-2">
-            ⚠️ 家族がまだ登録されていません。<br>
-            下の「家族の安否情報」から家族を追加してください。
-          </div>
-        `;
-        if (masterToggle) {
-          masterToggle.checked = false;
-          masterToggle.disabled = true;
-        }
-        return;
-      }
-    
-      // Re-enable master toggle when members exist
-      if (masterToggle) masterToggle.disabled = false;
-    
-      // Render members
-      familyData.forEach((member, index) => {
-        if (member.phone) {
-          const cleanPhone = member.phone.trim().replace(/[^0-9+]/g, '');
-          const wrapper = document.createElement('div');
-          wrapper.className = 'form-check';
-          
-          wrapper.innerHTML = `
-            <input class="form-check-input recipient-checkbox" type="checkbox" value="${cleanPhone}" id="recipient_${index}">
-            <label class="form-check-label text-white" for="recipient_${index}">
-              👤 ${member.name} (${member.phone})
-            </label>
-          `;
-          container.appendChild(wrapper);
-        }
-      });
-    }
-    
     function populateSenderDropdown() {
       const select = document.getElementById('smsSenderSelect');
       if (!select) return;      
