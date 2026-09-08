@@ -165,7 +165,7 @@
       color: #ffffff !important;
     }
     
-    /* Hover and active states for desktop mouse interactions */
+    /* Hover and active states ONLY for desktop mouse interactions */
     @media (hover: hover) {
       .btn-gps-cyan:hover,
       .btn-copy-sms:hover,
@@ -182,25 +182,30 @@
       .btn-gps-cyan:focus,
       .btn-gps-cyan:focus-visible,
       .btn-gps-cyan:active,
+      .btn-gps-cyan:hover,
       .btn-copy-sms:focus,
       .btn-copy-sms:focus-visible,
       .btn-copy-sms:active,
+      .btn-copy-sms:hover,
       .btn-parse-sms:focus,
       .btn-parse-sms:focus-visible,
       .btn-parse-sms:active,
+      .btn-parse-sms:hover,
       .btn-add:focus,
       .btn-add:focus-visible,
       .btn-add:active,
+      .btn-add:hover,
       #btn-gps:focus,
       #btn-gps:focus-visible,
-      #btn-gps:active {
+      #btn-gps:active,
+      #btn-gps:hover {
         background-color: #064881 !important;
         border-color: #064881 !important;
         color: #ffffff !important;
         box-shadow: none !important;
       }
     } 
-    .btn-gps-cyan:hover,
+   /* .btn-gps-cyan:hover,
     .btn-gps-cyan:active,
     .btn-copy-sms:hover,
     .btn-copy-sms:active,
@@ -210,7 +215,7 @@
     .btn-add:active {
       background-color: #155e75 !important;
       border-color: #164e63 !important;
-    } 
+    } */
 
     /* キーフレームアニメーション */
     @keyframes pulse {
