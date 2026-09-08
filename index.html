@@ -600,8 +600,8 @@
   
     function getGPSLocation() {
       const gpsMsg = document.getElementById("gpsStatus");
-      const coordsDisplay = document.getElementById("gpsCoordsDisplay");      
-      
+      const coordsDisplay = document.getElementById("gpsCoordsDisplay");
+    
       const options = { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 };
     
       navigator.geolocation.getCurrentPosition(
@@ -611,12 +611,29 @@
             lon: position.coords.longitude.toFixed(5)
           };
     
-          if (gpsMsg) gpsMsg.textContent = "📍 GPS位置情報の取得に成功しました！";
-          if (coordsDisplay) coordsDisplay.classList.add("d-none"); // Ensures coordinates stay hidden
+          if (gpsMsg) {
+            gpsMsg.textContent = "📍 GPS位置情報の取得に成功しました！";
+    
+            // Automatically clear success message after 3 seconds
+            setTimeout(() => {
+              gpsMsg.textContent = "";
+            }, 3000);
+          }
+    
+          if (coordsDisplay) coordsDisplay.classList.add("d-none");
         },
         (error) => {
           console.warn("GPS Error:", error);
-          if (gpsMsg) gpsMsg.textContent = "⚠️ GPS位置情報を取得できませんでした。";
+          
+          if (gpsMsg) {
+            gpsMsg.textContent = "⚠️ GPS位置情報を取得できませんでした。";
+    
+            // Automatically clear error message after 7 seconds
+            setTimeout(() => {
+              gpsMsg.textContent = "";
+            }, 7000);
+          }
+    
           if (coordsDisplay) coordsDisplay.classList.add("d-none");
         },
         options
