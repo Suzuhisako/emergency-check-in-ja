@@ -622,7 +622,9 @@
     }
   
     function getGPSLocation() {
-      if (document.activeElement && document.activeElement instanceof HTMLElement) {
+      const gpsBtn = document.getElementById("btn-gps");
+      if (gpsBtn) gpsBtn.blur();
+      if (document.activeElement && typeof document.activeElement.blur === 'function') {
         document.activeElement.blur();
       }
       const gpsMsg = document.getElementById("gpsStatus");
@@ -683,9 +685,10 @@
     } 
 
     function copyAndOpenSMS() {  
-      if (document.activeElement && document.activeElement instanceof HTMLElement) {
+     if (document.activeElement && typeof document.activeElement.blur === 'function') {
         document.activeElement.blur();
       }
+          
       // 1. ローカルデータの保存
       if (typeof saveData === 'function') {
         saveData();
