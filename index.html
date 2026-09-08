@@ -74,7 +74,7 @@
       -webkit-tap-highlight-color: transparent; /* Prevent gray/white overlay on mobile tap */
     }
     
-    /* --- 1. SAFE  --- */
+    /* --- 1. SAFE (無事・安全) --- */
     .btn-outline-success {
       border-width: 2px !important;
     }
@@ -82,16 +82,12 @@
     .btn-outline-success:active,
     .btn-outline-success.active {
       color: #fff !important;
-      background-color: #045d33 !important;
-      border-color: #045d33 !important;
+      background-color: #198754 !important;
+      border-color: #198754 !important;
       box-shadow: none !important;
     }
-    .bg-safe-custom {
-      background-color: #045d33 !important; 
-      color: #ffffff !important;
-    }
     
-    /* --- 2. IN TRANSIT / RELOCATING  --- */
+    /* --- 2. IN TRANSIT (移動中) --- */
     .btn-outline-warning {
       border-width: 2px !important;
     }
@@ -99,8 +95,8 @@
     .btn-outline-warning:active,
     .btn-outline-warning.active {
       color: #fff !important;
-      background-color: #cc9303 !important;
-      border-color: #cc9303 !important;
+      background-color: #d99b00 !important;
+      border-color: #d99b00 !important;
       box-shadow: none !important;
     }
     /* --- Matching Badge for IN TRANSIT (#d99b00) --- */
@@ -109,35 +105,35 @@
       color: #ffffff !important;
     }
     
-    /* --- 3. EVACUATED  */
+    /* --- 3. EVACUATED (避難完了  */
     .btn-outline-blue {
-      color: #0289b3;
-      border: 2px solid #0289b3;
+      color: #0da1ce;
+      border: 2px solid #0da1ce;
       background-color: transparent;
       -webkit-tap-highlight-color: transparent;
     }
     @media (hover: hover) {
       .btn-outline-blue:hover {
         color: #fff;
-        background-color: #0289b3;
-        border-color: #0289b3;
+        background-color: #0da1ce;
+        border-color: #0da1ce;
       }
     }
     .btn-outline-blue:focus,
     .btn-outline-blue:active,
     .btn-outline-blue.active {
       color: #fff !important;
-      background-color: #0289b3 !important;
-      border-color: #0289b3!important;
+      background-color: #0da1ce !important;
+      border-color: #0da1ce !important;
       box-shadow: none !important;
     }
     /* --- Matching Badge for EVACUATED (#066f8f) --- */
     .bg-blue {
-      background-color: #0289b3 !important;
+      background-color: #0da1ce !important;
       color: #fff !important;
     }
     
-    /* --- 4. NEED HELP --- */
+    /* --- 4. NEED HELP (要救助) --- */
     .btn-outline-danger {
       border-width: 2px !important;
     }
@@ -145,49 +141,39 @@
     .btn-outline-danger:active,
     .btn-outline-danger.active {
       color: #fff !important;
-      background-color: #af0213 !important;
-      border-color: #af0213 !important;
+      background-color: #dc3545 !important;
+      border-color: #dc3545 !important;
       box-shadow: none !important;
     }
 
     .btn-badge-danger {
-      background-color: #af0213 !important; 
+      background-color: #dc3545 !important; 
       color: #ffffff !important;
     }
 
-    /* Base dark blue style */
+    /* Touch device adjustments (GPS button only) */
+    @media (hover: none), (pointer: coarse) {
+      #btn-gps:focus,
+      #btn-gps:focus-visible,
+      #btn-gps:active,
+      #btn-gps:hover {
+        background-color: transparent !important;
+        color: #198754 !important;
+        border-color: #198754 !important;
+        box-shadow: none !important;
+      }
+    }  
+
     .btn-gps-cyan,
     .btn-copy-sms,
     .btn-parse-sms,
     .btn-add {
       background-color: #064881 !important; 
-      border-color: #064881 !important;
+      border-color: #064881!important;
       color: #ffffff !important;
     }
     
-    /* Touch active feedback (press down) */
-    .btn-gps-cyan:active,
-    .btn-copy-sms:active,
-    .btn-parse-sms:active,
-    .btn-add:active {
-      background-color: #155e75 !important;
-      border-color: #164e63 !important;
-    }
-    
-    /* Mobile focus release (release touch) */
-    @media (hover: none), (pointer: coarse) {
-      .btn-gps-cyan:focus,
-      .btn-copy-sms:focus,
-      .btn-parse-sms:focus,
-      .btn-add:focus,
-      #btn-gps:focus {
-        background-color: #064881 !important;
-        border-color: #064881 !important;
-        color: #ffffff !important;
-        box-shadow: none !important;
-      }
-    }
-    /*.btn-gps-cyan:hover,
+    .btn-gps-cyan:hover,
     .btn-gps-cyan:active,
     .btn-copy-sms:hover,
     .btn-copy-sms:active,
@@ -197,7 +183,7 @@
     .btn-add:active {
       background-color: #155e75 !important;
       border-color: #164e63 !important;
-    }*/ 
+    } 
 
     /* キーフレームアニメーション */
     @keyframes pulse {
@@ -301,14 +287,27 @@
       <div class="mb-4">
         <label class="form-label fw-bold small text-light mb-1">位置情報の取得</label>
         <button type="button" class="btn btn-gps-cyan w-100 py-2 fw-bold" onclick="getGPSLocation()">
-          📍 GPS自動取得
-        </button>   
+          📍 GPS位置情報を自動取得
+        </button>
+        
+        <div class="text-center mt-2">
+          <div id="gpsStatus" class="text-light small d-block mb-3">上のボタンを押して位置情報を添付する。</div>
+          <!--<div id="gpsCoordsDisplay" class="font-monospace text-info fw-bold mt-1 fs-6 d-none"></div> -->
+        </div>
       </div>
       
       <!-- Send Action Buttons -->
       <button type="button" class="btn btn-copy-sms btn-lg w-100 py-2 fw-bold" onclick="copyAndOpenSMS()">
-          📋 メッセージアプリで送信
-      </button>        
+          📋 自分の安否情報をコピーしてメッセージアプリを起動
+      </button>   
+          
+      <div id="copyAlert" class="alert alert-success mt-2 py-1 small d-none text-center" role="alert">
+        クリップボードにコピーしました！メッセージアプリに切り替えて長押しで貼り付けてください。
+      </div>
+
+      <div id="broadcastAlert" class="alert alert-success mt-2 py-2 small d-none" role="alert">
+        安否/状況をオフラインで端末に保存しました！
+      </div>
     </section>
 
     <!-- ステップ 2: 家族の安否掲示板 -->
@@ -508,7 +507,7 @@
     let sirenInterval = null;
     let isSirenActive = false;
     let currentStatus = "SAFE";
-    let currentCoords = null;
+   
     let liveBattery = 85;
     let currentCoords = null;
     let familyModalInstance = null;
@@ -609,51 +608,31 @@
     }
   
     function getGPSLocation() {
-      const gpsBtn = document.getElementById("btn-gps");
       const gpsMsg = document.getElementById("gpsStatus");
       const coordsDisplay = document.getElementById("gpsCoordsDisplay");
-    
-      // 1. Immediately drop touch focus to reset color
-      if (gpsBtn) gpsBtn.blur();
-      if (document.activeElement) document.activeElement.blur();
-    
+      
       if (gpsMsg) gpsMsg.textContent = "⌛ 衛星を探しています...";
     
-      // 2. Fallback check for browser compatibility
-      if (!navigator.geolocation) {
-        alert("GPS is not supported on this browser / お使いのブラウザはGPSに対応していません。");
-        if (gpsMsg) gpsMsg.textContent = "⚠️ GPS非対応のブラウザです。";
-        return;
-      }
+      const options = { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 };
     
-      // 3. Trigger native location prompt
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          // Store coordinates safely
           currentCoords = {
             lat: position.coords.latitude.toFixed(5),
             lon: position.coords.longitude.toFixed(5)
           };
     
           if (gpsMsg) gpsMsg.textContent = "📍 GPS位置情報の取得に成功しました！";
-          if (coordsDisplay) coordsDisplay.classList.add("d-none");
+          if (coordsDisplay) coordsDisplay.classList.add("d-none"); // Ensures coordinates stay hidden
         },
         (error) => {
-          console.warn("GPS Access Error:", error);
-          let errorMsg = "⚠️ GPS位置情報を取得できませんでした。";
-          
-          if (error.code === error.PERMISSION_DENIED) {
-            errorMsg = "⚠️ 位置情報の利用が許可されていません。";
-          } else if (error.code === error.TIMEOUT) {
-            errorMsg = "⚠️ GPSの取得がタイムアウトしました。";
-          }
-          
-          if (gpsMsg) gpsMsg.textContent = errorMsg;
+          console.warn("GPS Error:", error);
+          if (gpsMsg) gpsMsg.textContent = "⚠️ GPS位置情報を取得できませんでした。";
           if (coordsDisplay) coordsDisplay.classList.add("d-none");
         },
-        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+        options
       );
-    } 
+    }    
 
     function selectStatus(statusKey, btnElement) {
       // Prevent redundant triggers if already set
@@ -686,11 +665,7 @@
       }
     } 
 
-    function copyAndOpenSMS() {  
-     if (document.activeElement && typeof document.activeElement.blur === 'function') {
-        document.activeElement.blur();
-      }
-          
+    function copyAndOpenSMS() {    
       // 1. ローカルデータの保存
       if (typeof saveData === 'function') {
         saveData();
@@ -767,7 +742,7 @@
     // 4. Family Board & Modal Logic
     // ------------------------------------------------------------------
     function getBadgeClass(status) {
-      if (status === 'SAFE') return 'bg-safe-custom';
+      if (status === 'SAFE') return 'bg-success';
       if (status === 'IN TRANSIT') return 'bg-amber'; 
       if (status === 'EVACUATED') return 'bg-blue';
       if (status === 'NEED HELP') return 'btn-badge-danger';
@@ -779,7 +754,7 @@
       if (!list) return;
     
       if (!familyData || familyData.length === 0) {
-        list.innerHTML = `<div class="text-light small py-2 text-center">家族メンバーがまだ追加されていません。上の <strong>+ 追加</strong> をタップしてください。</div>`;
+        list.innerHTML = `<div class="text-secondary small py-2 text-center">家族メンバーがまだ追加されていません。上の <strong>+ 追加</strong> をタップしてください。</div>`;
         return;
       }
     
@@ -810,7 +785,7 @@
         // Safe helper function calls
         const safePhoneNorm = (typeof normalizePhone === "function" && m.phone) ? normalizePhone(m.phone) : m.phone;
         const safePhoneDisp = (typeof formatPhoneDisplay === "function" && m.phone) ? formatPhoneDisplay(m.phone) : m.phone;
-        const safeBadge = m.badgeClass || (typeof getBadgeClass === "function" ? getBadgeClass(m.status) : "bg-safe-custom");
+        const safeBadge = m.badgeClass || (typeof getBadgeClass === "function" ? getBadgeClass(m.status) : "bg-success");
     
         return `
           <div class="list-group-item bg-transparent text-light border-secondary px-0 py-2">
@@ -835,27 +810,63 @@
       }).join('');
     }
   
+    // Render recipient checkboxes from familyData    
+    function populateRecipientCheckboxes() {
+      const container = document.getElementById('recipientCheckboxesContainer');
+      const masterToggle = document.getElementById('selectAllRecipients');
+      if (!container) return;
+    
+      container.innerHTML = '';
+    
+      // Handle zero registered members
+      if (!familyData || familyData.length === 0) {
+        container.innerHTML = `
+          <div class="text-muted small py-2">
+            ⚠️ 家族がまだ登録されていません。<br>
+            下の「家族の安否情報」から家族を追加してください。
+          </div>
+        `;
+        if (masterToggle) {
+          masterToggle.checked = false;
+          masterToggle.disabled = true;
+        }
+        return;
+      }
+    
+      // Re-enable master toggle when members exist
+      if (masterToggle) masterToggle.disabled = false;
+    
+      // Render members
+      familyData.forEach((member, index) => {
+        if (member.phone) {
+          const cleanPhone = member.phone.trim().replace(/[^0-9+]/g, '');
+          const wrapper = document.createElement('div');
+          wrapper.className = 'form-check';
+          
+          wrapper.innerHTML = `
+            <input class="form-check-input recipient-checkbox" type="checkbox" value="${cleanPhone}" id="recipient_${index}">
+            <label class="form-check-label text-white" for="recipient_${index}">
+              👤 ${member.name} (${member.phone})
+            </label>
+          `;
+          container.appendChild(wrapper);
+        }
+      });
+    }
+    
     function populateSenderDropdown() {
       const select = document.getElementById('smsSenderSelect');
-      if (!select) return;     
-    
-      // Match language context automatically (Fallback for JS/EN)
-      const defaultLabel = (typeof currentLang !== 'undefined' && currentLang === 'en')
-        ? '-- Auto-detect from SMS text --'
-        : '-- SMS本文から自動検出 --';
-    
-      select.innerHTML = `<option value="">${defaultLabel}</option>`;
-    
-      if (Array.isArray(familyData) && familyData.length > 0) {
+      if (!select) return;      
+        select.innerHTML = '<option value="">-- SMS本文から自動検出 --</option>';
+      
         familyData.forEach(member => {
-          // Allow rendering even if phone number is empty on mobile
-          const phoneDisplay = member.phone ? ` (${member.phone})` : '';
-          const option = document.createElement('option');
-          option.value = member.phone || member.name;
-          option.textContent = `👤 ${member.name}${phoneDisplay}`;
-          select.appendChild(option);
-        });
-      }
+          if (member.phone) {
+            const option = document.createElement('option');
+            option.value = member.phone;
+            option.textContent = `👤 ${member.name} (${member.phone})`;
+            select.appendChild(option);
+          }
+      });
     }
       
     function loadData() {
@@ -871,7 +882,12 @@
           }
         } else {
           familyData = typeof DEFAULT_FAMILY !== "undefined" ? [...DEFAULT_FAMILY] : [];
-        }       
+        }
+    
+        // Populate dropdowns before status selection
+        if (typeof populateRecipientCheckboxes === "function") {
+          populateRecipientCheckboxes();
+        }
     
         // 2. Load personal emergency status
         const savedStatus = localStorage.getItem("my_emergency_status");
@@ -886,7 +902,10 @@
           }
         }
     
-       // 3. Render UI cleanly
+        const select = document.getElementById("smsRecipient");
+        if (select) select.value = "";
+    
+        // 3. Render UI cleanly
         if (typeof selectStatus === "function") selectStatus(currentStatus);
         if (typeof renderBoard === "function") renderBoard();
     
@@ -1051,7 +1070,8 @@
       }
     
       if (typeof saveData === "function") saveData();
-      if (typeof renderBoard === "function") renderBoard();     
+      if (typeof renderBoard === "function") renderBoard();
+      if (typeof populateRecipientCheckboxes === "function") populateRecipientCheckboxes();
     
       if (document.activeElement) document.activeElement.blur();
       if (typeof familyModalInstance !== "undefined" && familyModalInstance) {
@@ -1064,6 +1084,7 @@
       familyData = familyData.filter(m => String(m.id) !== String(id));
       if (typeof saveData === "function") saveData();
       renderBoard();
+      if (typeof populateRecipientCheckboxes === "function") populateRecipientCheckboxes();
     }
   
     function normalizePhone(phoneStr) {
@@ -1115,11 +1136,6 @@
       }
       
       document.getElementById("smsTextarea").value = "";
-    
-      // 1. Rebuild the family dropdown with current familyData
-      populateSenderDropdown();
-    
-      // 2. Show the modal instance
       if (!smsModalInstance) {
         smsModalInstance = new bootstrap.Modal(modalEl);
       }
@@ -1258,6 +1274,13 @@
       const noteInput = document.getElementById("statusNote");
       if (noteInput) {
         noteInput.addEventListener("input", () => {
+          saveData();
+        });
+      }
+    
+      const smsRecipient = document.getElementById("smsRecipient");
+      if (smsRecipient) {
+        smsRecipient.addEventListener("change", () => {
           saveData();
         });
       }
