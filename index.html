@@ -155,7 +155,7 @@
       color: #ffffff !important;
     }
 
-    /* Base styling for all custom dark blue action buttons */
+    //* 1. Base resting style for custom dark blue buttons */
     .btn-gps-cyan,
     .btn-copy-sms,
     .btn-parse-sms,
@@ -165,7 +165,7 @@
       color: #ffffff !important;
     }
     
-    /* Hover and active states ONLY for desktop mouse interactions */
+    /* 2. Hover states for Desktop / Mouse devices only */
     @media (hover: hover) {
       .btn-gps-cyan:hover,
       .btn-copy-sms:hover,
@@ -177,34 +177,24 @@
       }
     }
     
-    /* Force buttons to immediately return to resting dark blue on mobile touch */
+    /* 3. Mobile Touch override - forces button back to resting dark blue */
     @media (hover: none), (pointer: coarse) {
       .btn-gps-cyan:focus,
-      .btn-gps-cyan:focus-visible,
       .btn-gps-cyan:active,
-      .btn-gps-cyan:hover,
       .btn-copy-sms:focus,
-      .btn-copy-sms:focus-visible,
       .btn-copy-sms:active,
-      .btn-copy-sms:hover,
       .btn-parse-sms:focus,
-      .btn-parse-sms:focus-visible,
       .btn-parse-sms:active,
-      .btn-parse-sms:hover,
       .btn-add:focus,
-      .btn-add:focus-visible,
       .btn-add:active,
-      .btn-add:hover,
       #btn-gps:focus,
-      #btn-gps:focus-visible,
-      #btn-gps:active,
-      #btn-gps:hover {
+      #btn-gps:active {
         background-color: #064881 !important;
         border-color: #064881 !important;
         color: #ffffff !important;
         box-shadow: none !important;
       }
-    } 
+    }
    /* .btn-gps-cyan:hover,
     .btn-gps-cyan:active,
     .btn-copy-sms:hover,
@@ -320,7 +310,7 @@
         <label class="form-label fw-bold small text-light mb-1">位置情報の取得</label>
         <button type="button" class="btn btn-gps-cyan w-100 py-2 fw-bold" onclick="getGPSLocation()">
           📍 GPS自動取得
-        </button>        
+        </button>   
       </div>
       
       <!-- Send Action Buttons -->
