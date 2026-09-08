@@ -320,7 +320,7 @@
       
       <!-- Send Action Buttons -->
       <button type="button" class="btn btn-copy-sms btn-lg w-100 py-2 fw-bold" onclick="copyAndOpenSMS()">
-          📋 自分の安否をメッセージアプリで送信
+          📋 メッセージアプリで送信
       </button>        
     </section>
 
@@ -623,10 +623,21 @@
   
     function getGPSLocation() {
       const gpsBtn = document.getElementById("btn-gps");
-      if (gpsBtn) gpsBtn.blur();
-      if (document.activeElement && typeof document.activeElement.blur === 'function') {
-        document.activeElement.blur();
-      }
+      
+      // Helper function to force-reset button state on mobile
+      const resetButtonState = () => {
+        if (gpsBtn) {
+          gpsBtn.classList.remove("active");
+          gpsBtn.blur();
+        }
+        if (document.activeElement && typeof document.activeElement.blur === 'function') {
+          document.activeElement.blur();
+        }
+      };
+    
+      // 1. Initial reset on tap
+      resetButtonState();
+    
       const gpsMsg = document.getElementById("gpsStatus");
       const coordsDisplay = document.getElementById("gpsCoordsDisplay");
       
@@ -642,16 +653,22 @@
           };
     
           if (gpsMsg) gpsMsg.textContent = "📍 GPS位置情報の取得に成功しました！";
-          if (coordsDisplay) coordsDisplay.classList.add("d-none"); // Ensures coordinates stay hidden
+          if (coordsDisplay) coordsDisplay.classList.add("d-none");
+    
+          // 2. Clear sticky active/focus states after position is retrieved
+          resetButtonState();
         },
         (error) => {
           console.warn("GPS Error:", error);
           if (gpsMsg) gpsMsg.textContent = "⚠️ GPS位置情報を取得できませんでした。";
           if (coordsDisplay) coordsDisplay.classList.add("d-none");
+    
+          // 3. Clear sticky active/focus states on error
+          resetButtonState();
         },
         options
       );
-    }    
+    }   
 
     function selectStatus(statusKey, btnElement) {
       // Prevent redundant triggers if already set
