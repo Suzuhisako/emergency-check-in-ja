@@ -155,38 +155,50 @@
       color: #ffffff !important;
     }
 
-    /* Touch device adjustments (GPS button only) */
-    @media (hover: none), (pointer: coarse) {
-      #btn-gps:focus,
-      #btn-gps:focus-visible,
-      #btn-gps:active,
-      #btn-gps:hover {
-        background-color: transparent !important;
-        color: #198754 !important;
-        border-color: #198754 !important;
-        box-shadow: none !important;
-      }
-    }  
-
+    /* Base styling for all custom dark blue action buttons */
     .btn-gps-cyan,
     .btn-copy-sms,
     .btn-parse-sms,
     .btn-add {
       background-color: #064881 !important; 
-      border-color: #064881!important;
+      border-color: #064881 !important;
       color: #ffffff !important;
     }
     
-    .btn-gps-cyan:hover,
-    .btn-gps-cyan:active,
-    .btn-copy-sms:hover,
-    .btn-copy-sms:active,
-    .btn-parse-sms:hover,
-    .btn-parse-sms:active,
-    .btn-add:hover,
-    .btn-add:active {
-      background-color: #155e75 !important;
-      border-color: #164e63 !important;
+    /* Hover and active states for desktop mouse interactions */
+    @media (hover: hover) {
+      .btn-gps-cyan:hover,
+      .btn-copy-sms:hover,
+      .btn-parse-sms:hover,
+      .btn-add:hover {
+        background-color: #155e75 !important;
+        border-color: #164e63 !important;
+        color: #ffffff !important;
+      }
+    }
+    
+    /* Force buttons to immediately return to resting dark blue on mobile touch */
+    @media (hover: none), (pointer: coarse) {
+      .btn-gps-cyan:focus,
+      .btn-gps-cyan:focus-visible,
+      .btn-gps-cyan:active,
+      .btn-copy-sms:focus,
+      .btn-copy-sms:focus-visible,
+      .btn-copy-sms:active,
+      .btn-parse-sms:focus,
+      .btn-parse-sms:focus-visible,
+      .btn-parse-sms:active,
+      .btn-add:focus,
+      .btn-add:focus-visible,
+      .btn-add:active,
+      #btn-gps:focus,
+      #btn-gps:focus-visible,
+      #btn-gps:active {
+        background-color: #064881 !important;
+        border-color: #064881 !important;
+        color: #ffffff !important;
+        box-shadow: none !important;
+      }
     } 
 
     /* キーフレームアニメーション */
