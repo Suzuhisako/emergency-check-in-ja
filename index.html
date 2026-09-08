@@ -508,7 +508,7 @@
     let sirenInterval = null;
     let isSirenActive = false;
     let currentStatus = "SAFE";
-   
+    let currentCoords = null;
     let liveBattery = 85;
     let currentCoords = null;
     let familyModalInstance = null;
@@ -609,55 +609,51 @@
     }
   
     function getGPSLocation() {
-      try {
-        const gpsBtn = document.getElementById("btn-gps");
-        if (gpsBtn) {
-          gpsBtn.classList.remove("active");
-          gpsBtn.blur();
-        }
-        if (document.activeElement && typeof document.activeElement.blur === 'function') {
-          document.activeElement.blur();
-        }
+      const gpsBtn = document.getElementById("btn-gps");
+      const gpsMsg = document.getElementById("gpsStatus");
+      const coordsDisplay = document.getElementById("gpsCoordsDisplay");
     
-        const gpsMsg = document.getElementById("gpsStatus");
-        const coordsDisplay = document.getElementById("gpsCoordsDisplay");
-        
-        if (gpsMsg) gpsMsg.textContent = "⌛ 衛星を探しています...";
+      // 1. Immediately drop touch focus to reset color
+      if (gpsBtn) gpsBtn.blur();
+      if (document.activeElement) document.activeElement.blur();
     
-        if (!navigator.geolocation) {
-          alert("GPS is not supported by this browser.");
-          return;
-        }
+      if (gpsMsg) gpsMsg.textContent = "⌛ 衛星を探しています...";
     
-        const options = { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 };
-    
-        // This triggers the browser permission popup
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            currentCoords = {
-              lat: position.coords.latitude.toFixed(5),
-              lon: position.coords.longitude.toFixed(5)
-            };
-    
-            if (gpsMsg) gpsMsg.textContent = "📍 GPS位置情報の取得に成功しました！";
-            if (coordsDisplay) coordsDisplay.classList.add("d-none");
-    
-            if (gpsBtn) gpsBtn.blur();
-          },
-          (error) => {
-            console.warn("GPS Error:", error);
-            if (gpsMsg) gpsMsg.textContent = "⚠️ GPS位置情報を取得できませんでした。";
-            if (coordsDisplay) coordsDisplay.classList.add("d-none");
-    
-            if (gpsBtn) gpsBtn.blur();
-          },
-          options
-        );
-      } catch (err) {
-        console.error("GPS Execution Error:", err);
-        alert("GPS Error: " + err.message);
+      // 2. Fallback check for browser compatibility
+      if (!navigator.geolocation) {
+        alert("GPS is not supported on this browser / お使いのブラウザはGPSに対応していません。");
+        if (gpsMsg) gpsMsg.textContent = "⚠️ GPS非対応のブラウザです。";
+        return;
       }
-    }  
+    
+      // 3. Trigger native location prompt
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          // Store coordinates safely
+          currentCoords = {
+            lat: position.coords.latitude.toFixed(5),
+            lon: position.coords.longitude.toFixed(5)
+          };
+    
+          if (gpsMsg) gpsMsg.textContent = "📍 GPS位置情報の取得に成功しました！";
+          if (coordsDisplay) coordsDisplay.classList.add("d-none");
+        },
+        (error) => {
+          console.warn("GPS Access Error:", error);
+          let errorMsg = "⚠️ GPS位置情報を取得できませんでした。";
+          
+          if (error.code === error.PERMISSION_DENIED) {
+            errorMsg = "⚠️ 位置情報の利用が許可されていません。";
+          } else if (error.code === error.TIMEOUT) {
+            errorMsg = "⚠️ GPSの取得がタイムアウトしました。";
+          }
+          
+          if (gpsMsg) gpsMsg.textContent = errorMsg;
+          if (coordsDisplay) coordsDisplay.classList.add("d-none");
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+      );
+} 
 
     function selectStatus(statusKey, btnElement) {
       // Prevent redundant triggers if already set
