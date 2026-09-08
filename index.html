@@ -599,6 +599,9 @@
     }
   
     function getGPSLocation() {
+      if (document.activeElement && document.activeElement instanceof HTMLElement) {
+        document.activeElement.blur();
+      }
       const gpsMsg = document.getElementById("gpsStatus");
       const coordsDisplay = document.getElementById("gpsCoordsDisplay");
       
@@ -656,7 +659,10 @@
       }
     } 
 
-    function copyAndOpenSMS() {    
+    function copyAndOpenSMS() {  
+      if (document.activeElement && document.activeElement instanceof HTMLElement) {
+        document.activeElement.blur();
+      }
       // 1. ローカルデータの保存
       if (typeof saveData === 'function') {
         saveData();
