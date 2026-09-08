@@ -597,7 +597,9 @@
     function getGPSLocation() {
       const gpsMsg = document.getElementById("gpsStatus");
       const coordsDisplay = document.getElementById("gpsCoordsDisplay");
-        
+
+      if (gpsMsg) gpsMsg.textContent = "⌛ 衛星を探しています...";
+      
       const options = { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 };
     
       navigator.geolocation.getCurrentPosition(
