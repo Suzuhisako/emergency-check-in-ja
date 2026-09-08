@@ -155,7 +155,7 @@
       color: #ffffff !important;
     }
 
-    //* 1. Base resting style for custom dark blue buttons */
+    /* Base dark blue style */
     .btn-gps-cyan,
     .btn-copy-sms,
     .btn-parse-sms,
@@ -165,37 +165,29 @@
       color: #ffffff !important;
     }
     
-    /* 2. Hover states for Desktop / Mouse devices only */
-    @media (hover: hover) {
-      .btn-gps-cyan:hover,
-      .btn-copy-sms:hover,
-      .btn-parse-sms:hover,
-      .btn-add:hover {
-        background-color: #155e75 !important;
-        border-color: #164e63 !important;
-        color: #ffffff !important;
-      }
+    /* Touch active feedback (press down) */
+    .btn-gps-cyan:active,
+    .btn-copy-sms:active,
+    .btn-parse-sms:active,
+    .btn-add:active {
+      background-color: #155e75 !important;
+      border-color: #164e63 !important;
     }
     
-    /* 3. Mobile Touch override - forces button back to resting dark blue */
+    /* Mobile focus release (release touch) */
     @media (hover: none), (pointer: coarse) {
       .btn-gps-cyan:focus,
-      .btn-gps-cyan:active,
       .btn-copy-sms:focus,
-      .btn-copy-sms:active,
       .btn-parse-sms:focus,
-      .btn-parse-sms:active,
       .btn-add:focus,
-      .btn-add:active,
-      #btn-gps:focus,
-      #btn-gps:active {
+      #btn-gps:focus {
         background-color: #064881 !important;
         border-color: #064881 !important;
         color: #ffffff !important;
         box-shadow: none !important;
       }
     }
-    .btn-gps-cyan:hover,
+    /*.btn-gps-cyan:hover,
     .btn-gps-cyan:active,
     .btn-copy-sms:hover,
     .btn-copy-sms:active,
@@ -205,7 +197,7 @@
     .btn-add:active {
       background-color: #155e75 !important;
       border-color: #164e63 !important;
-    } 
+    }*/ 
 
     /* キーフレームアニメーション */
     @keyframes pulse {
@@ -617,10 +609,8 @@
     }
   
     function getGPSLocation() {
-      const gpsBtn = document.getElementById("btn-gps");
-      
-      // Helper function to force-reset button state on mobile
-      const resetButtonState = () => {
+      try {
+        const gpsBtn = document.getElementById("btn-gps");
         if (gpsBtn) {
           gpsBtn.classList.remove("active");
           gpsBtn.blur();
@@ -628,42 +618,46 @@
         if (document.activeElement && typeof document.activeElement.blur === 'function') {
           document.activeElement.blur();
         }
-      };
     
-      // 1. Initial reset on tap
-      resetButtonState();
+        const gpsMsg = document.getElementById("gpsStatus");
+        const coordsDisplay = document.getElementById("gpsCoordsDisplay");
+        
+        if (gpsMsg) gpsMsg.textContent = "⌛ 衛星を探しています...";
     
-      const gpsMsg = document.getElementById("gpsStatus");
-      const coordsDisplay = document.getElementById("gpsCoordsDisplay");
-      
-      if (gpsMsg) gpsMsg.textContent = "⌛ 衛星を探しています...";
+        if (!navigator.geolocation) {
+          alert("GPS is not supported by this browser.");
+          return;
+        }
     
-      const options = { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 };
+        const options = { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 };
     
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          currentCoords = {
-            lat: position.coords.latitude.toFixed(5),
-            lon: position.coords.longitude.toFixed(5)
-          };
+        // This triggers the browser permission popup
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            currentCoords = {
+              lat: position.coords.latitude.toFixed(5),
+              lon: position.coords.longitude.toFixed(5)
+            };
     
-          if (gpsMsg) gpsMsg.textContent = "📍 GPS位置情報の取得に成功しました！";
-          if (coordsDisplay) coordsDisplay.classList.add("d-none");
+            if (gpsMsg) gpsMsg.textContent = "📍 GPS位置情報の取得に成功しました！";
+            if (coordsDisplay) coordsDisplay.classList.add("d-none");
     
-          // 2. Clear sticky active/focus states after position is retrieved
-          resetButtonState();
-        },
-        (error) => {
-          console.warn("GPS Error:", error);
-          if (gpsMsg) gpsMsg.textContent = "⚠️ GPS位置情報を取得できませんでした。";
-          if (coordsDisplay) coordsDisplay.classList.add("d-none");
+            if (gpsBtn) gpsBtn.blur();
+          },
+          (error) => {
+            console.warn("GPS Error:", error);
+            if (gpsMsg) gpsMsg.textContent = "⚠️ GPS位置情報を取得できませんでした。";
+            if (coordsDisplay) coordsDisplay.classList.add("d-none");
     
-          // 3. Clear sticky active/focus states on error
-          resetButtonState();
-        },
-        options
-      );
-    }   
+            if (gpsBtn) gpsBtn.blur();
+          },
+          options
+        );
+      } catch (err) {
+        console.error("GPS Execution Error:", err);
+        alert("GPS Error: " + err.message);
+      }
+    }  
 
     function selectStatus(statusKey, btnElement) {
       // Prevent redundant triggers if already set
