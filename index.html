@@ -861,16 +861,23 @@
     function populateSenderDropdown() {
       const select = document.getElementById('smsSenderSelect');
       if (!select) return;      
-        select.innerHTML = '<option value="">-- SMS本文から自動検出 --</option>';
-      
+      // Match language context automatically (Fallback for JS/EN)
+      const defaultLabel = (typeof currentLang !== 'undefined' && currentLang === 'en')
+        ? '-- Auto-detect from SMS text --'
+        : '-- SMS本文から自動検出 --';
+    
+      select.innerHTML = `<option value="">${defaultLabel}</option>`;
+    
+      if (Array.isArray(familyData) && familyData.length > 0) {
         familyData.forEach(member => {
-          if (member.phone) {
-            const option = document.createElement('option');
-            option.value = member.phone;
-            option.textContent = `👤 ${member.name} (${member.phone})`;
-            select.appendChild(option);
-          }
-      });
+          // Allow rendering even if phone number is empty on mobile
+          const phoneDisplay = member.phone ? ` (${member.phone})` : '';
+          const option = document.createElement('option');
+          option.value = member.phone || member.name;
+          option.textContent = `👤 ${member.name}${phoneDisplay}`;
+          select.appendChild(option);
+        });
+      }
     }
       
     function loadData() {
