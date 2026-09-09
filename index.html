@@ -861,10 +861,8 @@
     function populateSenderDropdown() {
       const select = document.getElementById('smsSenderSelect');
       if (!select) return;      
-      // Match language context automatically (Fallback for JS/EN)
-      const defaultLabel = (typeof currentLang !== 'undefined' && currentLang === 'en')
-        ? '-- Auto-detect from SMS text --'
-        : '-- SMS本文から自動検出 --';
+      
+      const defaultLabel = const defaultLabel = '-- SMS本文から自動検出 --';
     
       select.innerHTML = `<option value="">${defaultLabel}</option>`;
     
